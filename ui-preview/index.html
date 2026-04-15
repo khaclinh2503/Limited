@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thành Hội: LIMITED</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            /* ZPS Brand Colors */
+            --zps-brand-red: #E8341A;
+            --zps-brand-orange: #F5A623;
+            --zps-brand-gradient: linear-gradient(135deg, #E8341A 0%, #F5A623 100%);
+            --zps-accent-green: #00D68F;
+            --zps-accent-purple: #7C4DFF;
+            --zps-accent-blue: #4A90D9;
+
+            /* Background */
+            --zps-bg-page: #13151F;
+            --zps-bg-surface: #252836;
+            --zps-bg-elevated: #2E3148;
+            --zps-bg-warm: #FFF8F5;
+
+            /* Text */
+            --zps-text-primary: #FFFFFF;
+            --zps-text-secondary: #8A8FA8;
+            --zps-text-dark: #2D1B14;
+
+            /* Semantic */
+            --quality-do: #E8341A;
+            --quality-cam: #F5A623;
+            --quality-tim: #7C4DFF;
+            --quality-xanh-lac: #00D68F;
+            --quality-xanh-lam: #4A90D9;
+
+            /* Shadows */
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 12px 40px rgba(232, 52, 26, 0.25);
+
+            /* Motion */
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+
+        body {
+            background: var(--zps-bg-page);
+            color: var(--zps-text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Aurora animated background */
+        .animated-bg {
+            position: fixed;
+            inset: 0;
+            background: var(--zps-bg-page);
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .animated-bg::before,
+        .animated-bg::after {
+            content: '';
+            position: absolute;
+            width: 60vmax;
+            height: 60vmax;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            animation: aurora 18s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        .animated-bg::before {
+            top: -20%;
+            left: -15%;
+            background: radial-gradient(circle, rgba(232, 52, 26, 0.55), transparent 60%);
+        }
+
+        .animated-bg::after {
+            bottom: -25%;
+            right: -20%;
+            background: radial-gradient(circle, rgba(124, 77, 255, 0.5), transparent 60%);
+            animation-delay: -9s;
+        }
+
+        @keyframes aurora {
+            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            33% { transform: translate(8%, 10%) scale(1.15) rotate(60deg); }
+            66% { transform: translate(-6%, 4%) scale(0.9) rotate(-40deg); }
+        }
+
+        /* Extra aurora layer */
+        .aurora-layer {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 70% 20%, rgba(245, 166, 35, 0.12), transparent 35%),
+                radial-gradient(circle at 15% 70%, rgba(0, 214, 143, 0.1), transparent 35%);
+            animation: shimmerBg 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes shimmerBg {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Floating petals */
+        .petal-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .petal {
+            position: absolute;
+            top: -40px;
+            font-size: 20px;
+            opacity: 0;
+            animation: fall linear infinite;
+            filter: drop-shadow(0 0 8px rgba(245, 166, 35, 0.6));
+            will-change: transform, opacity;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translate3d(0, -40px, 0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.85; }
+            90% { opacity: 0.7; }
+            100% {
+                transform: translate3d(60px, 105vh, 0) rotate(540deg);
+                opacity: 0;
+            }
+        }
+
+        /* Sparkles */
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff, rgba(255,255,255,0) 70%);
+            box-shadow: 0 0 10px #fff, 0 0 18px var(--zps-brand-orange);
+            animation: sparkle 2.4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.6); opacity: 1; }
+        }
+
+        /* Card with animated gradient border */
+        .card-gradient {
+            background: var(--zps-bg-surface);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+        }
+
+        .card-gradient::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            padding: 1.5px;
+            background: conic-gradient(from var(--angle, 0deg),
+                rgba(232, 52, 26, 0.9),
+                rgba(245, 166, 35, 0.8),
+                rgba(124, 77, 255, 0.9),
+                rgba(0, 214, 143, 0.7),
+                rgba(232, 52, 26, 0.9));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: spinBorder 8s linear infinite;
+        }
+
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        @keyframes spinBorder {
+            to { --angle: 360deg; }
+        }
+
+        .card-gradient:hover {
+            box-shadow: 0 20px 50px rgba(232, 52, 26, 0.35), 0 0 60px rgba(124, 77, 255, 0.2);
+        }
+
+        /* Gradient text with shimmer */
+        .text-gradient {
+            background: linear-gradient(90deg, #E8341A, #F5A623, #7C4DFF, #00D68F, #E8341A);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerText 6s linear infinite;
+            filter: drop-shadow(0 0 18px rgba(245, 166, 35, 0.35));
+        }
+
+        @keyframes shimmerText {
+            to { background-position: 300% center; }
+        }
+
+        /* Button styles */
+        .btn-primary {
+            background: var(--zps-brand-gradient);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s var(--ease-smooth);
+            box-shadow: 0 4px 16px rgba(232, 52, 26, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(232, 52, 26, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--zps-bg-elevated);
+            color: var(--zps-text-primary);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s var(--ease-smooth);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: var(--zps-bg-warm);
+            transform: translateY(-2px);
+        }
+
+        /* Input styles */
+        .input-field {
+            background: var(--zps-bg-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--zps-text-primary);
+            font-size: 14px;
+            width: 100%;
+            transition: all 0.2s var(--ease-smooth);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--zps-brand-orange);
+            box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.2);
+        }
+
+        /* Quality badge colors */
+        .quality-do { background: var(--quality-do); }
+        .quality-cam { background: var(--quality-cam); }
+        .quality-tim { background: var(--quality-tim); }
+        .quality-xanh-lac { background: var(--quality-xanh-lac); }
+        .quality-xanh-lam { background: var(--quality-xanh-lam); }
+
+        /* Flower card with bloom */
+        .flower-card {
+            position: relative;
+            background: linear-gradient(145deg, var(--zps-bg-elevated), rgba(46, 49, 72, 0.5));
+            border-radius: 14px;
+            padding: 16px;
+            transition: all 0.35s var(--ease-bounce);
+            border: 2px solid transparent;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .flower-card::before {
+            content: '';
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(from 0deg, transparent 40%, rgba(245, 166, 35, 0.35), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            animation: spinBorder 4s linear infinite;
+        }
+
+        .flower-card:hover::before { opacity: 1; }
+
+        .flower-card > * { position: relative; z-index: 1; }
+
+        .flower-card:hover {
+            transform: translateY(-6px) scale(1.04) rotate(-1deg);
+            box-shadow: 0 14px 40px rgba(124, 77, 255, 0.35), 0 0 30px rgba(245, 166, 35, 0.25);
+        }
+
+        .flower-card:hover img {
+            transform: scale(1.1) rotate(6deg);
+            filter: brightness(1.15) drop-shadow(0 0 12px rgba(245, 166, 35, 0.6));
+        }
+
+        .flower-card img {
+            transition: all 0.4s var(--ease-bounce);
+        }
+
+        .flower-card.selected {
+            border-color: var(--zps-brand-orange);
+            background: linear-gradient(145deg, rgba(245, 166, 35, 0.15), rgba(232, 52, 26, 0.08));
+            box-shadow: 0 0 30px rgba(245, 166, 35, 0.55), inset 0 0 20px rgba(245, 166, 35, 0.1);
+            animation: bloomPulse 2.4s ease-in-out infinite;
+        }
+
+        @keyframes bloomPulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(245, 166, 35, 0.55), inset 0 0 20px rgba(245, 166, 35, 0.1); }
+            50% { box-shadow: 0 0 45px rgba(245, 166, 35, 0.85), inset 0 0 28px rgba(245, 166, 35, 0.2); }
+        }
+
+        .flower-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #00D68F, #4A90D9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 2;
+            box-shadow: 0 0 14px rgba(0, 214, 143, 0.7);
+            animation: checkPop 0.4s var(--ease-bounce);
+        }
+
+        @keyframes checkPop {
+            0% { transform: scale(0) rotate(-180deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        /* Modal */
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-enter {
+            animation: modal-enter 0.3s var(--ease-bounce);
+        }
+
+        @keyframes modal-enter {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Hover effect on rows */
+        .table-row {
+            transition: all 0.2s var(--ease-smooth);
+        }
+
+        /* Navigation base */
+        .nav-item { position: relative; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--zps-bg-page);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--zps-bg-elevated);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--zps-brand-orange);
+        }
+
+        /* Rank badge */
+        .rank-1 {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            animation: goldPulse 2s ease-in-out infinite;
+        }
+        .rank-2 { background: linear-gradient(135deg, #C0C0C0, #E8E8E8); box-shadow: 0 0 14px rgba(220, 220, 220, 0.5); }
+        .rank-3 { background: linear-gradient(135deg, #CD7F32, #A0522D); box-shadow: 0 0 14px rgba(205, 127, 50, 0.5); }
+
+        @keyframes goldPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+            50% { box-shadow: 0 0 40px rgba(255, 215, 0, 1), 0 0 60px rgba(245, 166, 35, 0.5); }
+        }
+
+        /* Stats card with glow */
+        .stats-card {
+            background: linear-gradient(135deg, rgba(232, 52, 26, 0.18), rgba(124, 77, 255, 0.1));
+            border: 1px solid rgba(232, 52, 26, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s var(--ease-smooth);
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(245, 166, 35, 0.15), transparent 40%);
+            animation: spinBorder 6s linear infinite;
+            pointer-events: none;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(232, 52, 26, 0.3), 0 0 30px rgba(124, 77, 255, 0.2);
+        }
+
+        .stats-card > * { position: relative; z-index: 1; }
+
+        /* Button primary glow */
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-primary:hover::after { left: 100%; }
+
+        /* Nav glow */
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(232, 52, 26, 0.25), rgba(245, 166, 35, 0.15));
+            color: var(--zps-brand-orange);
+            box-shadow: 0 0 20px rgba(245, 166, 35, 0.35);
+        }
+
+        /* Table row hover glow */
+        .table-row:hover {
+            background: linear-gradient(90deg, rgba(232, 52, 26, 0.15), rgba(124, 77, 255, 0.1));
+            transform: scale(1.01);
+            box-shadow: inset 0 0 20px rgba(245, 166, 35, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    <div class="aurora-layer"></div>
+    <div class="petal-layer" id="petalLayer"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E8341A] to-[#F5A623] flex items-center justify-center text-xl">🌸</div>
+                    <span class="text-xl font-bold text-gradient">Hội: LIMITED</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="showSection('dashboard')" class="nav-item active px-4 py-2 rounded-xl text-sm font-medium transition">Trang chủ</button>
+                    <button onclick="showSection('stats')" class="nav-item px-4 py-2 rounded-xl text-sm font-medium transition">Nhập thông tin</button>
+                    <button onclick="showSection('admin')" class="nav-item px-4 py-2 rounded-xl text-sm font-medium transition">Quản lý</button>
+                    <button class="btn-primary text-sm ml-4">Đăng nhập</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="pt-24 pb-12 px-4 min-h-screen">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h1 class="text-5xl md:text-6xl font-bold mb-4">
+                    <span class="text-gradient">Chào mừng đến với Hội LIMITED</span>
+                </h1>
+                <p class="text-lg text-[#8A8FA8] mb-8">Theo dõi bảng xếp hạng và thông tin thành viên hội game</p>
+                <div class="flex justify-center space-x-4">
+                    <button class="btn-primary">🏆 Xem Bảng Xếp Hạng</button>
+                    <button onclick="showSection('stats')" class="btn-secondary">🌸 Nhập thông tin</button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="stats-card rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-[#E8341A]/20 flex items-center justify-center text-2xl">👥</div>
+                        <span class="text-[#8A8FA8] text-sm">Thành viên</span>
+                    </div>
+                    <div class="text-3xl font-bold text-[#FFFFFF]">47</div>
+                    <div class="text-sm text-[#8A8FA8] mt-1">Tổng số</div>
+                </div>
+                <div class="stats-card rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-[#7C4DFF]/20 flex items-center justify-center text-2xl">📅</div>
+                        <span class="text-[#8A8FA8] text-sm">Trạng thái</span>
+                    </div>
+                    <div class="text-3xl font-bold text-[#FFFFFF]">Mùa 1</div>
+                    <div class="text-sm text-[#8A8FA8] mt-1">Đang hoạt động</div>
+                </div>
+                <div id="topPlayerCard" class="stats-card rounded-2xl p-6 cursor-pointer hover:scale-[1.02] transition-transform" style="cursor: pointer;">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-[#00D68F]/20 flex items-center justify-center text-2xl">🥇</div>
+                        <span class="text-[#8A8FA8] text-sm">Đứng đầu</span>
+                    </div>
+                    <div class="text-3xl font-bold text-[#FFFFFF]">Nguyen Van A</div>
+                    <div class="text-sm text-[#8A8FA8] mt-1">Hạng #1 • Bấm để xem chi tiết</div>
+                </div>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="card-gradient">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <span>🏆</span>
+                    <span class="text-gradient">Top 10 Xếp Hạng</span>
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-[#2E3148]">
+                                <th class="text-left py-4 px-4 font-semibold text-[#8A8FA8]">Hạng</th>
+                                <th class="text-left py-4 px-4 font-semibold text-[#8A8FA8]">Thành viên</th>
+                                <th class="text-center py-4 px-4 font-semibold text-[#8A8FA8]">Tổng hoa</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm" id="leaderboardBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Input Section -->
+    <section id="stats" class="pt-24 pb-12 px-4 min-h-screen hidden">
+        <div class="max-w-6xl mx-auto">
+            <div class="card-gradient">
+                <h2 class="text-2xl font-bold mb-2 flex items-center gap-2">
+                    <span class="text-gradient">🌸</span>
+                    <span>Nhập thông tin của bạn</span>
+                </h2>
+                <p class="text-[#8A8FA8] mb-8">Chọn các hoa đang sở hữu (gần 300 loại hoa)</p>
+
+                <form id="statsForm">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left: Personal Info -->
+                        <div class="lg:col-span-1 space-y-6">
+                            <div class="text-center">
+                                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-[#E8341A] to-[#F5A623] mx-auto mb-3 flex items-center justify-center text-3xl cursor-pointer hover:scale-110 transition">👤</div>
+                            </div>
+                            <div>
+                                <label class="block text-[#8A8FA8] text-sm font-medium mb-2">Tên trong game</label>
+                                <input type="text" class="input-field" placeholder="Tên của bạn">
+                            </div>
+                            <div>
+                                <label class="block text-[#8A8FA8] text-sm font-medium mb-2">Tiểu sử</label>
+                                <textarea class="input-field" rows="2" placeholder="Điền một chút về bạn..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[#8A8FA8] text-sm font-medium mb-2">ID trò chơi</label>
+                                <input type="text" class="input-field" placeholder="ID của bạn">
+                            </div>
+                            <div>
+                                <label class="block text-[#8A8FA8] text-sm font-medium mb-2">Zalo (tùy chọn)</label>
+                                <input type="text" class="input-field" placeholder="Số điện thoại Zalo">
+                            </div>
+                        </div>
+
+                        <!-- Right: Flower Selection -->
+                        <div class="lg:col-span-2 space-y-4">
+                            <div class="bg-[#2E3148]/50 rounded-xl p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-bold text-gradient">🌸 Chọn hoa đang sở hữu</h3>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm text-[#8A8FA8]">Đã chọn: <strong id="selectedCount" class="text-[#F5A623] font-bold">0</strong></span>
+                                        <button type="button" onclick="selectAllFlowers()" class="text-sm text-[#00D68F] hover:text-[#4A90D9] font-medium">Chọn tất cả</button>
+                                        <button type="button" onclick="clearAllFlowers()" class="text-sm text-[#E8341A] hover:text-[#F5A623] font-medium">Xóa tất cả</button>
+                                    </div>
+                                </div>
+
+                                <!-- Search and Filter -->
+                                <div class="mb-4">
+                                    <input type="text" id="flowerSearch" placeholder="🔍 Tìm kiếm hoa..." class="input-field" oninput="filterFlowers()">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="block text-[#8A8FA8] text-sm font-medium mb-2">Phẩm chất</label>
+                                    <div class="flex flex-wrap gap-2">
+                                        <button type="button" onclick="filterByQuality('ALL')" class="px-4 py-2 rounded-full bg-[#8A8FA8]/30 text-[#FFFFFF] text-sm font-medium hover:bg-[#8A8FA8]/50 transition quality-filter-btn" data-quality="ALL">Tất cả</button>
+                                        <button type="button" onclick="filterByQuality('DO')" class="px-4 py-2 rounded-full quality-do text-white text-sm font-medium hover:opacity-80 transition quality-filter-btn" data-quality="DO">Đỏ</button>
+                                        <button type="button" onclick="filterByQuality('CAM')" class="px-4 py-2 rounded-full quality-cam text-white text-sm font-medium hover:opacity-80 transition quality-filter-btn" data-quality="CAM">Cam</button>
+                                        <button type="button" onclick="filterByQuality('TIM')" class="px-4 py-2 rounded-full quality-tim text-white text-sm font-medium hover:opacity-80 transition quality-filter-btn" data-quality="TIM">Tím</button>
+                                        <button type="button" onclick="filterByQuality('XANH_LAC')" class="px-4 py-2 rounded-full quality-xanh-lac text-white text-sm font-medium hover:opacity-80 transition quality-filter-btn" data-quality="XANH_LAC">Xanh lá</button>
+                                        <button type="button" onclick="filterByQuality('XANH_LAM')" class="px-4 py-2 rounded-full quality-xanh-lam text-white text-sm font-medium hover:opacity-80 transition quality-filter-btn" data-quality="XANH_LAM">Xanh dương</button>
+                                    </div>
+                                </div>
+
+                                <!-- Flower Grid -->
+                                <div id="flowerGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" style="max-height: 400px; overflow-y: auto; padding: 8px;"></div>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="button" onclick="submitForm()" class="btn-primary">✅ Lưu thông tin</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Section -->
+    <section id="admin" class="pt-24 pb-12 px-4 min-h-screen hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="card-gradient">
+                <h2 class="text-2xl font-bold mb-2 flex items-center gap-2">
+                    <span>👑</span>
+                    <span class="text-gradient">Trang Quản lý</span>
+                </h2>
+                <p class="text-[#8A8FA8] mb-8">Quản lý thành viên và dữ liệu game</p>
+                <div class="flex justify-between items-center mb-6">
+                    <input type="text" placeholder="🔍 Tìm thành viên..." class="input-field" style="width: 300px;">
+                    <div class="space-x-3">
+                        <button onclick="openAddFlowerTypeModal()" class="btn-primary" style="background: linear-gradient(135deg, #00D68F 0%, #4A90D9 100%);">+ Thêm loại hoa</button>
+                        <button class="btn-secondary">Xuất Excel</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-[#2E3148]">
+                                <th class="text-left py-4 px-4 font-semibold text-[#8A8FA8]">#</th>
+                                <th class="text-left py-4 px-4 font-semibold text-[#8A8FA8]">Thành viên</th>
+                                <th class="text-left py-4 px-4 font-semibold text-[#8A8FA8]">ID trò chơi</th>
+                                <th class="text-left py-4 px-4 font-semibold text-[#8A8FA8]">Tổng hoa</th>
+                                <th class="text-left py-4 px-4 font-semibold text-[#8A8FA8]">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="border-b border-[#2E3148]">
+                                <td class="py-4 px-4"><span class="rank-1 text-white px-3 py-1 rounded-full text-xs font-bold">🥇1</span></td>
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#E8341A] to-[#F5A623] flex items-center justify-center">A</div>
+                                        <div>
+                                            <div class="font-semibold text-[#FFFFFF]">Nguyen Van A</div>
+                                            <div class="text-[#8A8FA8] text-xs">@nguyenvana</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4">123456789</td>
+                                <td class="py-4 px-4 font-bold text-[#F5A623]">12 🌸</td>
+                                <td class="py-4 px-4">
+                                    <div class="space-x-2">
+                                        <button class="text-[#4A90D9] hover:text-[#7C4DFF]">✏️</button>
+                                        <button class="text-[#E8341A] hover:text-[#F5A623]">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-[#2E3148]">
+                                <td class="py-4 px-4"><span class="rank-2 text-white px-3 py-1 rounded-full text-xs font-bold">🥈2</span></td>
+                                <td class="py-4 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#7C4DFF] to-[#B47AFF] flex items-center justify-center">T</div>
+                                        <div>
+                                            <div class="font-semibold text-[#FFFFFF]">Tran Thi B</div>
+                                            <div class="text-[#8A8FA8] text-xs">@tranthib</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4">987654321</td>
+                                <td class="py-4 px-4 font-bold text-[#F5A623]">12 🌸</td>
+                                <td class="py-4 px-4">
+                                    <div class="space-x-2">
+                                        <button class="text-[#4A90D9] hover:text-[#7C4DFF]">✏️</button>
+                                        <button class="text-[#E8341A] hover:text-[#F5A623]">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Flower Type Modal -->
+    <div id="addFlowerTypeModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center hidden">
+        <div class="card-gradient max-w-md w-full mx-4 modal-enter" style="max-width: 400px;">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gradient">➕ Thêm loại hoa mới</h3>
+                <button onclick="closeAddFlowerTypeModal()" class="text-[#8A8FA8] hover:text-[#FFFFFF] text-2xl">&times;</button>
+            </div>
+            <form id="addFlowerTypeForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[#8A8FA8] text-sm font-medium mb-2">Tên hoa</label>
+                        <input type="text" id="flowerTypeName" class="input-field" placeholder="Tên hoa (vd: Hoa cúc vàng)">
+                    </div>
+
+                    <div>
+                        <label class="block text-[#8A8FA8] text-sm font-medium mb-2">Phẩm chất</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="setFlowerQuality('DO')" class="px-4 py-2 rounded-full quality-do text-white text-sm hover:opacity-80 transition quality-btn selected ring-2 ring-[#F5A623]" data-quality="DO">Đỏ</button>
+                            <button type="button" onclick="setFlowerQuality('CAM')" class="px-4 py-2 rounded-full quality-cam text-white text-sm hover:opacity-80 transition quality-btn" data-quality="CAM">Cam</button>
+                            <button type="button" onclick="setFlowerQuality('TIM')" class="px-4 py-2 rounded-full quality-tim text-white text-sm hover:opacity-80 transition quality-btn" data-quality="TIM">Tím</button>
+                            <button type="button" onclick="setFlowerQuality('XANH_LAC')" class="px-4 py-2 rounded-full quality-xanh-lac text-white text-sm hover:opacity-80 transition quality-btn" data-quality="XANH_LAC">Xanh lá</button>
+                            <button type="button" onclick="setFlowerQuality('XANH_LAM')" class="px-4 py-2 rounded-full quality-xanh-lam text-white text-sm hover:opacity-80 transition quality-btn" data-quality="XANH_LAM">Xanh dương</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[#8A8FA8] text-sm font-medium mb-2">Ảnh đại diện</label>
+                        <div class="text-center">
+                            <div id="flowerPreviewContainer" class="w-32 h-32 rounded-full mx-auto mb-2 overflow-hidden border-4 border-[#2E3148] shadow-lg">
+                                <img id="flowerPreview" src="https://placehold.co/128x128/E8341A/white?text=🌹" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="addFlowerType()" class="btn-primary w-full" style="background: linear-gradient(135deg, #00D68F 0%, #4A90D9 100%);">✅ Thêm loại hoa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Player Modal -->
+    <div id="flowersModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center hidden">
+        <div class="card-gradient max-w-lg w-full mx-4 modal-enter" style="max-width: 480px;">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gradient">🌸 Chi tiết người chơi</h3>
+                <button onclick="closeFlowersModal()" class="text-[#8A8FA8] hover:text-[#FFFFFF] text-2xl">&times;</button>
+            </div>
+            <div id="flowersList"></div>
+        </div>
+    </div>
+
+    <script>
+        const qualityOrder = { 'DO': 1, 'CAM': 2, 'TIM': 3, 'XANH_LAC': 4, 'XANH_LAM': 5 };
+        const qualityNames = { 'DO': 'Đỏ', 'CAM': 'Cam', 'TIM': 'Tím', 'XANH_LAC': 'Xanh lá', 'XANH_LAM': 'Xanh dương' };
+
+        const leaderboard = [
+            { rank: 1, name: 'Nguyen Van A', handle: '@nguyenvana', total: 12, gradient: 'from-[#E8341A] to-[#F5A623]', flowers: [
+                {type: 'HOA_HONG_DO', name: 'Hoa hồng', quality: 'DO', count: 5, emoji: '🌹'},
+                {type: 'HOA_HONG_CAM', name: 'Hoa hồng', quality: 'CAM', count: 2, emoji: '🌹'},
+                {type: 'HOA_CUC_DO_DO', name: 'Cúc đỏ', quality: 'DO', count: 3, emoji: '🌺'},
+                {type: 'HOA_LA_N_XANH', name: 'Lan', quality: 'XANH_LAM', count: 2, emoji: '🌸'}
+            ]},
+            { rank: 2, name: 'Tran Thi B', handle: '@tranthib', total: 12, gradient: 'from-[#7C4DFF] to-[#B47AFF]', flowers: [
+                {type: 'HOA_HONG_DO', name: 'Hoa hồng', quality: 'DO', count: 8, emoji: '🌹'},
+                {type: 'HOA_CUC_DO_DO', name: 'Cúc đỏ', quality: 'DO', count: 4, emoji: '🌺'}
+            ]},
+            { rank: 3, name: 'Le Van C', handle: '@levanc', total: 18, gradient: 'from-[#00D68F] to-[#4A90D9]', flowers: [
+                {type: 'HOA_CUC_DO_DO', name: 'Cúc đỏ', quality: 'DO', count: 12, emoji: '🌺'},
+                {type: 'HOA_SEN_XANH', name: 'Sen', quality: 'XANH_LAM', count: 6, emoji: '🪷'}
+            ]},
+            { rank: 4, name: 'Pham Van D', handle: '@phamvand', total: 12, gradient: 'from-[#00D68F] to-[#4A90D9]', flowers: [
+                {type: 'HOA_HONG_XANH', name: 'Hoa hồng', quality: 'XANH_LAM', count: 7, emoji: '🌹'},
+                {type: 'HOA_CUC_DO_CAM', name: 'Cúc đỏ', quality: 'CAM', count: 5, emoji: '🌺'}
+            ]},
+            { rank: 5, name: 'Hoang Thi E', handle: '@hoangthe', total: 18, gradient: 'from-[#E8341A] to-[#7C4DFF]', flowers: [
+                {type: 'HOA_HONG_DO', name: 'Hoa hồng', quality: 'DO', count: 10, emoji: '🌹'},
+                {type: 'HOA_CUC_DO_CAM', name: 'Cúc đỏ', quality: 'CAM', count: 8, emoji: '🌺'}
+            ]}
+        ];
+
+        function renderLeaderboard() {
+            const tbody = document.getElementById('leaderboardBody');
+            if (!tbody) return;
+            tbody.innerHTML = leaderboard.map((p, i) => {
+                const isLast = i === leaderboard.length - 1;
+                const rankBadge = p.rank === 1
+                    ? '<span class="rank-1 text-white px-3 py-1 rounded-full text-xs font-bold">🥇1</span>'
+                    : p.rank === 2
+                    ? '<span class="rank-2 text-white px-3 py-1 rounded-full text-xs font-bold">🥈2</span>'
+                    : p.rank === 3
+                    ? '<span class="rank-3 text-white px-3 py-1 rounded-full text-xs font-bold">🥉3</span>'
+                    : `<span class="bg-[#4A4A5A] text-[#FFFFFF] px-3 py-1 rounded-full text-xs font-bold">${p.rank}</span>`;
+                return `
+                    <tr class="table-row ${isLast ? '' : 'border-b border-[#2E3148]'} cursor-pointer" data-player-idx="${i}" style="cursor: pointer;">
+                        <td class="py-4 px-4">${rankBadge}</td>
+                        <td class="py-4 px-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br ${p.gradient} flex items-center justify-center text-lg">👤</div>
+                                <div>
+                                    <div class="font-semibold text-[#FFFFFF]">${p.name}</div>
+                                    <div class="text-[#8A8FA8] text-xs">${p.handle}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center py-4 px-4 font-bold text-[#F5A623] text-lg">${p.total} 🌸</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        const flowerTypes = [
+            { type: 'HOA_HONG_DO', name: 'Hoa hồng', quality: 'DO', baseName: 'Hoa hồng', emoji: '🌹' },
+            { type: 'HOA_HONG_CAM', name: 'Hoa hồng', quality: 'CAM', baseName: 'Hoa hồng', emoji: '🌹' },
+            { type: 'HOA_HONG_TIM', name: 'Hoa hồng', quality: 'TIM', baseName: 'Hoa hồng', emoji: '🌹' },
+            { type: 'HOA_HONG_XANH', name: 'Hoa hồng', quality: 'XANH_LAM', baseName: 'Hoa hồng', emoji: '🌹' },
+            { type: 'HOA_CUC_DO_DO', name: 'Cúc đỏ', quality: 'DO', baseName: 'Cúc đỏ', emoji: '🌺' },
+            { type: 'HOA_CUC_DO_CAM', name: 'Cúc đỏ', quality: 'CAM', baseName: 'Cúc đỏ', emoji: '🌺' },
+            { type: 'HOA_CUC_DO_TIM', name: 'Cúc đỏ', quality: 'TIM', baseName: 'Cúc đỏ', emoji: '🌺' },
+            { type: 'HOA_CUC_DO_XANH', name: 'Cúc đỏ', quality: 'XANH_LAM', baseName: 'Cúc đỏ', emoji: '🌺' },
+            { type: 'HOA_CUC_TRANG_DO', name: 'Cúc trắng', quality: 'DO', baseName: 'Cúc trắng', emoji: '🌷' },
+            { type: 'HOA_CUC_TRANG_CAM', name: 'Cúc trắng', quality: 'CAM', baseName: 'Cúc trắng', emoji: '🌷' },
+            { type: 'HOA_CUC_TRANG_TIM', name: 'Cúc trắng', quality: 'TIM', baseName: 'Cúc trắng', emoji: '🌷' },
+            { type: 'HOA_CUC_TRANG_XANH', name: 'Cúc trắng', quality: 'XANH_LAM', baseName: 'Cúc trắng', emoji: '🌷' },
+            { type: 'HOA_LA_N_DO', name: 'Lan', quality: 'DO', baseName: 'Lan', emoji: '🌸' },
+            { type: 'HOA_LA_N_CAM', name: 'Lan', quality: 'CAM', baseName: 'Lan', emoji: '🌸' },
+            { type: 'HOA_LA_N_TIM', name: 'Lan', quality: 'TIM', baseName: 'Lan', emoji: '🌸' },
+            { type: 'HOA_LA_N_XANH', name: 'Lan', quality: 'XANH_LAM', baseName: 'Lan', emoji: '🌸' },
+            { type: 'HOA_SEN_DO', name: 'Sen', quality: 'DO', baseName: 'Sen', emoji: '🪷' },
+            { type: 'HOA_SEN_CAM', name: 'Sen', quality: 'CAM', baseName: 'Sen', emoji: '🪷' },
+            { type: 'HOA_SEN_TIM', name: 'Sen', quality: 'TIM', baseName: 'Sen', emoji: '🪷' },
+            { type: 'HOA_SEN_XANH', name: 'Sen', quality: 'XANH_LAM', baseName: 'Sen', emoji: '🪷' },
+            { type: 'HOA_MAU_DON_DO', name: 'Mẫu đơn', quality: 'DO', baseName: 'Mẫu đơn', emoji: '🌺' },
+            { type: 'HOA_MAU_DON_CAM', name: 'Mẫu đơn', quality: 'CAM', baseName: 'Mẫu đơn', emoji: '🌺' },
+            { type: 'HOA_MAU_DON_TIM', name: 'Mẫu đơn', quality: 'TIM', baseName: 'Mẫu đơn', emoji: '🌺' },
+            { type: 'HOA_MAU_DON_XANH', name: 'Mẫu đơn', quality: 'XANH_LAM', baseName: 'Mẫu đơn', emoji: '🌺' },
+            { type: 'HOA_ANH_DAO_DO', name: 'Anh đào', quality: 'DO', baseName: 'Anh đào', emoji: '🌸' },
+            { type: 'HOA_ANH_DAO_CAM', name: 'Anh đào', quality: 'CAM', baseName: 'Anh đào', emoji: '🌸' },
+            { type: 'HOA_ANH_DAO_TIM', name: 'Anh đào', quality: 'TIM', baseName: 'Anh đào', emoji: '🌸' },
+            { type: 'HOA_ANH_DAO_XANH', name: 'Anh đào', quality: 'XANH_LAM', baseName: 'Anh đào', emoji: '🌸' },
+            { type: 'HOA_HUONG_DUONG_DO', name: 'Hướng dương', quality: 'DO', baseName: 'Hướng dương', emoji: '🌻' },
+            { type: 'HOA_HUONG_DUONG_CAM', name: 'Hướng dương', quality: 'CAM', baseName: 'Hướng dương', emoji: '🌻' },
+            { type: 'HOA_HUONG_DUONG_TIM', name: 'Hướng dương', quality: 'TIM', baseName: 'Hướng dương', emoji: '🌻' },
+            { type: 'HOA_HUONG_DUONG_XANH', name: 'Hướng dương', quality: 'XANH_LAM', baseName: 'Hướng dương', emoji: '🌻' },
+        ];
+
+        const selectedFlowers = new Set();
+        let currentFilteredFlowers = [...flowerTypes];
+
+        function showSection(sectionId) {
+            document.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            event?.target.closest('.nav-item')?.classList.add('active');
+        }
+
+        function generateFlowers(flowers = flowerTypes) {
+            const grid = document.getElementById('flowerGrid');
+            grid.innerHTML = '';
+
+            flowers.forEach(flower => {
+                const card = document.createElement('div');
+                card.className = `flower-card ${selectedFlowers.has(flower.type) ? 'selected' : ''}`;
+                card.onclick = () => toggleFlower(flower.type);
+                const qualityColor = { 'DO': 'DC3545', 'CAM': 'F5A623', 'TIM': '7C4DFF', 'XANH_LAC': '00D68F', 'XANH_LAM': '4A90D9' }[flower.quality];
+
+                card.innerHTML = `
+                    <img src="https://placehold.co/80x80/${qualityColor}/FFFFFF?text=${flower.emoji}" alt="${flower.name}" class="w-full h-24 object-cover rounded-lg mb-2">
+                    <div class="font-medium text-white text-sm">${flower.name}</div>
+                `;
+                grid.appendChild(card);
+            });
+            document.getElementById('selectedCount').textContent = selectedFlowers.size;
+        }
+
+        function toggleFlower(type) {
+            if (selectedFlowers.has(type)) selectedFlowers.delete(type);
+            else selectedFlowers.add(type);
+            generateFlowers();
+        }
+
+        function selectAllFlowers() {
+            currentFilteredFlowers.forEach(flower => selectedFlowers.add(flower.type));
+            generateFlowers();
+        }
+
+        function clearAllFlowers() {
+            currentFilteredFlowers.forEach(flower => selectedFlowers.delete(flower.type));
+            generateFlowers();
+        }
+
+        function filterFlowers() {
+            const search = document.getElementById('flowerSearch').value.toLowerCase();
+            currentFilteredFlowers = flowerTypes.filter(flower =>
+                flower.name.toLowerCase().includes(search) ||
+                qualityNames[flower.quality].toLowerCase().includes(search)
+            );
+            generateFlowers(currentFilteredFlowers);
+        }
+
+        function filterByQuality(quality) {
+            document.querySelectorAll('.quality-filter-btn').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-[#F5A623]');
+                if (btn.dataset.quality === quality) btn.classList.add('ring-2', 'ring-[#F5A623]');
+            });
+
+            if (quality === 'ALL') {
+                currentFilteredFlowers = [...flowerTypes];
+            } else {
+                currentFilteredFlowers = flowerTypes.filter(flower => flower.quality === quality);
+            }
+            generateFlowers(currentFilteredFlowers);
+        }
+
+        window.showFlowersModal = function(username, flowers) {
+            const modal = document.getElementById('flowersModal');
+            const list = document.getElementById('flowersList');
+
+            // Sort flowers by quality
+            flowers.sort((a, b) => qualityOrder[a.quality] - qualityOrder[b.quality]);
+
+            const totalFlowers = flowers.reduce((sum, f) => sum + f.count, 0);
+            const top10Flowers = flowers.slice(0, 10);
+
+            let html = `
+                <div class="text-center mb-8">
+                    <div class="w-24 h-24 rounded-full bg-gradient-to-br from-[#E8341A] to-[#F5A623] mx-auto mb-4 flex items-center justify-center text-4xl overflow-hidden border-4 border-[#2E3148] shadow-lg">
+                        👤
+                    </div>
+                    <h3 class="text-2xl font-bold text-[#FFFFFF] mb-2">${username}</h3>
+                    <p class="text-[#8A8FA8] text-sm mb-4">Tiểu sử của người chơi này</p>
+                    <div class="text-3xl font-bold text-gradient">${totalFlowers} 🌸 Hoa đã sở hữu</div>
+                </div>
+
+                <h4 class="text-lg font-bold text-[#FFFFFF] mb-4 text-center">🏆 Top 10 Hoa Phẩm Chất Cao Nhất</h4>
+                <div class="grid grid-cols-5 gap-3">
+            `;
+
+            top10Flowers.forEach((flower, index) => {
+                const qualityColor = { 'DO': 'DC3545', 'CAM': 'F5A623', 'TIM': '7C4DFF', 'XANH_LAC': '00D68F', 'XANH_LAM': '4A90D9' }[flower.quality];
+
+                html += `
+                    <div class="relative group cursor-pointer" style="cursor: pointer;">
+                        <div class="w-20 h-20 rounded-full overflow-hidden border-3 border-[#2E3148] shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <img src="https://placehold.co/80x80/${qualityColor}/FFFFFF?text=${flower.emoji}" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+            list.innerHTML = html;
+            modal.classList.remove('hidden');
+        }
+
+        function closeFlowersModal() {
+            document.getElementById('flowersModal').classList.add('hidden');
+        }
+
+        document.getElementById('flowersModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeFlowersModal();
+        });
+
+        function submitForm() {
+            alert('✅ Thành công! Đã lưu thông tin! 🌸');
+        }
+
+        window.openAddFlowerTypeModal = function() {
+            document.getElementById('addFlowerTypeModal').classList.remove('hidden');
+        }
+
+        window.closeAddFlowerTypeModal = function() {
+            document.getElementById('addFlowerTypeModal').classList.add('hidden');
+        }
+
+        function setFlowerQuality(quality) {
+            document.querySelectorAll('.quality-btn').forEach(btn => {
+                btn.classList.remove('selected', 'ring-2', 'ring-[#F5A623]');
+                if (btn.dataset.quality === quality) {
+                    btn.classList.add('selected', 'ring-2', 'ring-[#F5A623]');
+                }
+            });
+
+            const emoji = { 'DO': '🌹', 'CAM': '🌺', 'TIM': '🌸', 'XANH_LAC': '🌷', 'XANH_LAM': '🌻' }[quality];
+            const colors = { 'DO': 'DC3545', 'CAM': 'F5A623', 'TIM': '7C4DFF', 'XANH_LAC': '00D68F', 'XANH_LAM': '4A90D9' };
+            const color = colors[quality] || 'CCCCCC';
+            document.getElementById('flowerPreview').src = `https://placehold.co/128x128/${color}/FFFFFF?text=${emoji}`;
+        }
+
+        function addFlowerType() {
+            const name = document.getElementById('flowerTypeName').value;
+
+            if (!name) {
+                alert('Vui lòng nhập tên hoa!');
+                return;
+            }
+
+            const selectedBtn = document.querySelector('.quality-btn.selected');
+            if (!selectedBtn) {
+                alert('Vui lòng chọn phẩm chất hoa!');
+                return;
+            }
+            const quality = selectedBtn.dataset.quality;
+
+            alert(`✅ Đã thêm loại hoa "${name}" (Phẩm chất: ${qualityNames[quality]})!`);
+            closeAddFlowerTypeModal();
+            document.getElementById('addFlowerTypeForm').reset();
+            generateFlowers();
+        }
+
+        // Initialize
+        generateFlowers();
+        renderLeaderboard();
+
+        // Spawn falling petals
+        (function spawnPetals() {
+            const layer = document.getElementById('petalLayer');
+            if (!layer) return;
+            const petalEmojis = ['🌸', '🌺', '🌷', '🌹', '💮', '🏵️', '🌼'];
+            const count = 22;
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'petal';
+                p.textContent = petalEmojis[Math.floor(Math.random() * petalEmojis.length)];
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.fontSize = (14 + Math.random() * 18) + 'px';
+                p.style.animationDuration = (9 + Math.random() * 10) + 's';
+                p.style.animationDelay = (-Math.random() * 15) + 's';
+                p.style.opacity = 0.45 + Math.random() * 0.45;
+                layer.appendChild(p);
+            }
+        })();
+
+        // Sparkles inside gradient cards
+        (function spawnSparkles() {
+            document.querySelectorAll('.card-gradient, .stats-card').forEach(card => {
+                const n = 3 + Math.floor(Math.random() * 3);
+                for (let i = 0; i < n; i++) {
+                    const s = document.createElement('span');
+                    s.className = 'sparkle';
+                    s.style.top = Math.random() * 100 + '%';
+                    s.style.left = Math.random() * 100 + '%';
+                    s.style.animationDelay = (Math.random() * 2.4) + 's';
+                    s.style.animationDuration = (1.8 + Math.random() * 2) + 's';
+                    card.appendChild(s);
+                }
+            });
+        })();
+
+        // Event delegation for leaderboard rows
+        document.getElementById('leaderboardBody')?.addEventListener('click', function(e) {
+            const row = e.target.closest('tr[data-player-idx]');
+            if (!row) return;
+            const idx = parseInt(row.dataset.playerIdx, 10);
+            const p = leaderboard[idx];
+            if (p) showFlowersModal(p.name, [...p.flowers]);
+        });
+
+        // Top player card click
+        document.getElementById('topPlayerCard')?.addEventListener('click', function() {
+            const p = leaderboard[0];
+            if (p) showFlowersModal(p.name, [...p.flowers]);
+        });
+    </script>
+</body>
+</html>
