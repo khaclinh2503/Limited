@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = env("TURSO_DATABASE_URL")
 }
 
 enum Role {
@@ -67,6 +67,16 @@ model FlowerOwnership {
   @@unique([userId, flowerTypeId])
   @@index([userId])
   @@index([flowerTypeId])
+}
+
+model SeasonResult {
+  id        String   @id @default(cuid())
+  season    Int      @unique
+  tier      String   // D, C, B, A, S
+  rank      Int      @default(1)
+  points    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ──────────────────────────────

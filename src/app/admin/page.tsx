@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminPage() {
-  const [rawFlowers, users] = await Promise.all([
+  const [rawFlowers, users, seasons] = await Promise.all([
     prisma.flowerType.findMany({
       orderBy: { name: "asc" },
       include: { _count: { select: { ownerships: true } } },
@@ -20,8 +20,9 @@ export default async function AdminPage() {
         ownerships: { select: { flowerTypeId: true } },
       },
     }),
+    prisma.seasonResult.findMany({ orderBy: { season: "asc" } }),
   ]);
 
   const flowers = sortFlowersByQuality(rawFlowers);
-  return <AdminClient flowers={flowers} users={users} />;
+  return <AdminClient flowers={flowers} users={users} seasons={seasons} />;
 }

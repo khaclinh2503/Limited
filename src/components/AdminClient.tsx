@@ -9,6 +9,7 @@ import {
   deleteFlowerType,
 } from "@/app/actions/flower-types";
 import { approveUser, updateUserRole, deleteUser } from "@/app/actions/admin";
+import { upsertSeasonResult, deleteSeasonResult } from "@/app/actions/seasons";
 import type { Quality, Role } from "@prisma/client";
 
 /* ── Types ── */
@@ -33,9 +34,18 @@ interface User {
   ownerships: { flowerTypeId: string }[];
 }
 
+interface SeasonResult {
+  id: string;
+  season: number;
+  tier: string;
+  rank: number;
+  points: number;
+}
+
 interface Props {
   flowers: Flower[];
   users: User[];
+  seasons: SeasonResult[];
 }
 
 /* ── Flower modal form ── */
@@ -48,8 +58,8 @@ interface FlowerForm {
 const EMPTY_FORM: FlowerForm = { name: "", quality: "DO", imageUrl: "" };
 
 /* ── Main component ── */
-export function AdminClient({ flowers, users }: Props) {
-  const [tab, setTab] = useState<"flowers" | "members">("flowers");
+export function AdminClient({ flowers, users, seasons }: Props) {
+  const [tab, setTab] = useState<"flowers" | "members" | "seasons">("flowers");
 
   return (
     <div className="h-full flex flex-col gap-3">
@@ -60,16 +70,17 @@ export function AdminClient({ flowers, users }: Props) {
       {/* Tab bar */}
       <div className="flex gap-2 border-b border-white/10 shrink-0">
         {[
-          { key: "flowers", label: "🌸 Catalog hoa", count: flowers.length, pending: 0 },
-          { key: "members", label: "👥 Thành viên", count: users.length, pending: users.filter(u => !u.approved).length },
+          { key: "flowers",  label: "🌸 Catalog hoa", count: flowers.length, pending: 0 },
+          { key: "members",  label: "👥 Thành viên",  count: users.length,   pending: users.filter(u => !u.approved).length },
+          { key: "seasons",  label: "🏆 Mùa giải",    count: seasons.length, pending: 0 },
         ].map(({ key, label, count, pending }) => (
           <button
             key={key}
-            onClick={() => setTab(key as "flowers" | "members")}
+            onClick={() => setTab(key as "flowers" | "members" | "seasons")}
             className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg transition-all -mb-px border-b-2 ${
               tab === key
-                ? "border-[var(--zps-brand-orange)] text-white bg-[var(--zps-bg-surface)]"
-                : "border-transparent text-[var(--zps-text-secondary)] hover:text-white"
+                ? "border-[var(--zps-brand-orange)] text-[var(--zps-text-primary)] bg-[var(--zps-bg-surface)]"
+                : "border-transparent text-[var(--zps-text-secondary)] hover:text-[var(--zps-text-primary)]"
             }`}
           >
             {label}
@@ -88,8 +99,10 @@ export function AdminClient({ flowers, users }: Props) {
       <div className="flex-1 min-h-0">
         {tab === "flowers" ? (
           <FlowerCatalogTab flowers={flowers} />
-        ) : (
+        ) : tab === "members" ? (
           <MembersTab users={users} flowers={flowers} />
+        ) : (
+          <SeasonsTab seasons={seasons} />
         )}
       </div>
     </div>
@@ -700,6 +713,262 @@ function Modal({
         </div>
         {children}
       </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   Tab Mùa Giải
+══════════════════════════════════════════ */
+const TIERS = ["D", "C", "B", "A", "S"] as const;
+
+const TIER_COLOR: Record<string, string> = {
+  D: "#8A8FA8",
+  C: "#00D68F",
+  B: "#4A90D9",
+  A: "#7C4DFF",
+  S: "#F5A623",
+};
+
+interface SeasonForm {
+  season: string;
+  tier: string;
+  rank: string;
+  points: string;
+}
+
+const EMPTY_SEASON: SeasonForm = { season: "", tier: "D", rank: "1", points: "" };
+
+function SeasonsTab({ seasons }: { seasons: SeasonResult[] }) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState<SeasonResult | null>(null);
+  const [form, setForm] = useState<SeasonForm>(EMPTY_SEASON);
+  const [confirmDelete, setConfirmDelete] = useState<SeasonResult | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState("");
+
+  function openAdd() {
+    setEditing(null);
+    setForm(EMPTY_SEASON);
+    setError("");
+    setModalOpen(true);
+  }
+
+  function openEdit(s: SeasonResult) {
+    setEditing(s);
+    setForm({ season: String(s.season), tier: s.tier, rank: String(s.rank), points: String(s.points) });
+    setError("");
+    setModalOpen(true);
+  }
+
+  function submit() {
+    const season = parseInt(form.season);
+    const rank   = parseInt(form.rank);
+    const points = parseInt(form.points);
+    if (!season || !form.tier || !rank || isNaN(points)) {
+      setError("Vui lòng điền đầy đủ thông tin.");
+      return;
+    }
+    startTransition(async () => {
+      try {
+        await upsertSeasonResult({ season, tier: form.tier, rank, points });
+        setModalOpen(false);
+      } catch {
+        setError("Lưu thất bại, thử lại nhé!");
+      }
+    });
+  }
+
+  function confirmDel(s: SeasonResult) {
+    setConfirmDelete(s);
+  }
+
+  function doDelete() {
+    if (!confirmDelete) return;
+    startTransition(async () => {
+      await deleteSeasonResult(confirmDelete.season);
+      setConfirmDelete(null);
+    });
+  }
+
+  return (
+    <div className="h-full flex flex-col gap-3 overflow-y-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between shrink-0">
+        <p className="text-sm text-[var(--zps-text-secondary)]">
+          {seasons.length} mùa đã ghi nhận
+        </p>
+        <button onClick={openAdd} className="btn-primary !py-2 !px-4 text-sm">
+          + Thêm mùa
+        </button>
+      </div>
+
+      {/* Table */}
+      <div className="card-gradient !p-0 overflow-hidden">
+        {seasons.length === 0 ? (
+          <div className="text-center py-12 text-[var(--zps-text-secondary)]">
+            <p className="text-3xl mb-2">🏆</p>
+            <p className="text-sm">Chưa có dữ liệu mùa nào</p>
+          </div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr style={{ borderBottom: "1px solid var(--zps-border-divider)" }}>
+                {["Mùa", "Hạng đấu", "Thứ hạng", "Điểm", ""].map((h) => (
+                  <th key={h} className="px-5 py-3 text-left text-xs uppercase tracking-wider text-[var(--zps-text-secondary)] font-medium">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--zps-border-divider)]">
+              {seasons.map((s) => (
+                <tr key={s.id} className="hover:bg-[var(--zps-overlay)] transition-colors">
+                  <td className="px-5 py-3 font-bold">Mùa {s.season}</td>
+                  <td className="px-5 py-3">
+                    <span
+                      className="px-2.5 py-1 rounded-lg text-xs font-bold"
+                      style={{
+                        background: `${TIER_COLOR[s.tier]}22`,
+                        color: TIER_COLOR[s.tier],
+                        border: `1px solid ${TIER_COLOR[s.tier]}44`,
+                      }}
+                    >
+                      Hạng {s.tier}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3">
+                    {s.rank === 1 ? "🥇" : s.rank === 2 ? "🥈" : s.rank === 3 ? "🥉" : `#${s.rank}`}
+                  </td>
+                  <td className="px-5 py-3 font-bold tabular-nums" style={{ color: "var(--zps-text-accent)" }}>
+                    {s.points.toLocaleString("vi-VN")}
+                  </td>
+                  <td className="px-5 py-3">
+                    <div className="flex items-center gap-2 justify-end">
+                      <button
+                        onClick={() => openEdit(s)}
+                        className="text-xs px-2.5 py-1 rounded-lg transition-colors"
+                        style={{ background: "var(--zps-bg-elevated)", color: "var(--zps-text-secondary)" }}
+                      >
+                        Sửa
+                      </button>
+                      <button
+                        onClick={() => confirmDel(s)}
+                        className="text-xs px-2.5 py-1 rounded-lg transition-colors hover:bg-red-500/10"
+                        style={{ color: "#E8341A" }}
+                      >
+                        Xóa
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* Add / Edit modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setModalOpen(false)} />
+          <div className="relative card-gradient w-full max-w-sm space-y-4 z-10">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-lg">
+                {editing ? `Sửa Mùa ${editing.season}` : "Thêm mùa mới"}
+              </h3>
+              <button onClick={() => setModalOpen(false)} className="text-[var(--zps-text-secondary)] hover:text-[var(--zps-text-primary)]">✕</button>
+            </div>
+
+            <div className="space-y-3">
+              {/* Số mùa */}
+              <div>
+                <label className="field-label">Số mùa</label>
+                <input
+                  type="number" min={1}
+                  className="input-field"
+                  placeholder="VD: 6"
+                  value={form.season}
+                  onChange={(e) => setForm((p) => ({ ...p, season: e.target.value }))}
+                  disabled={!!editing}
+                />
+              </div>
+
+              {/* Hạng đấu */}
+              <div>
+                <label className="field-label">Hạng đấu</label>
+                <div className="flex gap-2">
+                  {TIERS.map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setForm((p) => ({ ...p, tier: t }))}
+                      className="flex-1 py-2 rounded-lg text-sm font-bold transition-all"
+                      style={
+                        form.tier === t
+                          ? { background: `${TIER_COLOR[t]}33`, color: TIER_COLOR[t], border: `1.5px solid ${TIER_COLOR[t]}` }
+                          : { background: "var(--zps-bg-elevated)", color: "var(--zps-text-secondary)", border: "1.5px solid transparent" }
+                      }
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Thứ hạng */}
+              <div>
+                <label className="field-label">Thứ hạng</label>
+                <input
+                  type="number" min={1}
+                  className="input-field"
+                  placeholder="1"
+                  value={form.rank}
+                  onChange={(e) => setForm((p) => ({ ...p, rank: e.target.value }))}
+                />
+              </div>
+
+              {/* Điểm */}
+              <div>
+                <label className="field-label">Điểm</label>
+                <input
+                  type="number" min={0}
+                  className="input-field"
+                  placeholder="VD: 62244"
+                  value={form.points}
+                  onChange={(e) => setForm((p) => ({ ...p, points: e.target.value }))}
+                />
+              </div>
+
+              {error && <p className="text-xs text-red-400">{error}</p>}
+            </div>
+
+            <div className="flex gap-2 pt-1">
+              <button onClick={() => setModalOpen(false)} className="btn-secondary flex-1 !py-2.5 text-sm">Hủy</button>
+              <button onClick={submit} disabled={isPending} className="btn-primary flex-1 !py-2.5 text-sm disabled:opacity-60">
+                {isPending ? "Đang lưu..." : "Lưu"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm delete */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setConfirmDelete(null)} />
+          <div className="relative card-gradient w-full max-w-xs text-center space-y-4 z-10">
+            <p className="text-3xl">🗑️</p>
+            <p className="font-semibold">Xóa Mùa {confirmDelete.season}?</p>
+            <p className="text-sm text-[var(--zps-text-secondary)]">Hành động này không thể hoàn tác.</p>
+            <div className="flex gap-2">
+              <button onClick={() => setConfirmDelete(null)} className="btn-secondary flex-1 !py-2.5 text-sm">Hủy</button>
+              <button onClick={doDelete} disabled={isPending} className="btn-primary flex-1 !py-2.5 text-sm disabled:opacity-60" style={{ background: "#E8341A" }}>
+                {isPending ? "Đang xóa..." : "Xóa"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

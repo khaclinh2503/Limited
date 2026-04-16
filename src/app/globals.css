@@ -13,12 +13,24 @@
   --zps-accent-purple: #7C4DFF;
   --zps-accent-blue: #4A90D9;
 
+  /* Dark mode (default) */
   --zps-bg-page: #13151F;
   --zps-bg-surface: #252836;
   --zps-bg-elevated: #2E3148;
-
   --zps-text-primary: #FFFFFF;
   --zps-text-secondary: #8A8FA8;
+
+  /* Semantic tokens — thay đổi theo theme */
+  --zps-nav-bg: rgba(19, 21, 31, 0.80);
+  --zps-nav-border: rgba(255, 255, 255, 0.07);
+  --zps-border: rgba(255, 255, 255, 0.10);
+  --zps-border-divider: rgba(255, 255, 255, 0.08);
+  --zps-overlay: rgba(255, 255, 255, 0.05);
+  --zps-card-shadow: rgba(0, 0, 0, 0.35);
+  --zps-dropdown-shadow: rgba(0, 0, 0, 0.45);
+  --zps-flower-card-bg-start: var(--zps-bg-elevated);
+  --zps-flower-card-bg-end: rgba(46, 49, 72, 0.5);
+  --zps-text-accent: #F5A623;
 
   --quality-do: #E8341A;
   --quality-cam: #F5A623;
@@ -33,6 +45,28 @@
   --angle: 0deg;
 }
 
+/* ─────────────────────────────────────────────
+   Light mode token overrides
+───────────────────────────────────────────── */
+html[data-theme="light"] {
+  color-scheme: light;
+  --zps-bg-page: #FDE8F3;
+  --zps-bg-surface: #FFF4FB;
+  --zps-bg-elevated: #FFD6EA;
+  --zps-text-primary: #2A1020;
+  --zps-text-secondary: #7A3D60;
+  --zps-nav-bg: rgba(253, 232, 243, 0.90);
+  --zps-nav-border: rgba(220, 60, 120, 0.15);
+  --zps-border: rgba(220, 60, 120, 0.18);
+  --zps-border-divider: rgba(220, 60, 120, 0.12);
+  --zps-overlay: rgba(220, 60, 120, 0.06);
+  --zps-card-shadow: rgba(180, 40, 100, 0.10);
+  --zps-dropdown-shadow: rgba(120, 20, 70, 0.18);
+  --zps-flower-card-bg-start: #FFF4FB;
+  --zps-flower-card-bg-end: rgba(255, 195, 225, 0.55);
+  --zps-text-accent: #B05400;
+}
+
 @property --angle {
   syntax: '<angle>';
   initial-value: 0deg;
@@ -44,6 +78,11 @@
 ───────────────────────────────────────────── */
 * {
   box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 html,
@@ -146,8 +185,8 @@ body {
   padding: 24px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
-  transition: box-shadow 0.3s var(--ease-smooth);
+  box-shadow: 0 10px 40px var(--zps-card-shadow);
+  transition: box-shadow 0.3s var(--ease-smooth), background-color 0.25s ease;
 }
 
 .card-gradient::before {
@@ -173,8 +212,14 @@ body {
 
 .card-gradient:hover {
   box-shadow:
-    0 20px 50px rgba(232, 52, 26, 0.35),
-    0 0 60px rgba(124, 77, 255, 0.2);
+    0 20px 50px rgba(232, 52, 26, 0.25),
+    0 0 40px rgba(124, 77, 255, 0.15);
+}
+
+html[data-theme="light"] .card-gradient:hover {
+  box-shadow:
+    0 8px 30px rgba(232, 52, 26, 0.12),
+    0 0 20px rgba(124, 77, 255, 0.06);
 }
 
 /* ─────────────────────────────────────────────
@@ -217,12 +262,12 @@ body {
   border-radius: 12px;
   font-weight: 600;
   transition: all 0.2s var(--ease-smooth);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--zps-border);
   cursor: pointer;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--zps-overlay);
   transform: translateY(-2px);
 }
 
@@ -244,7 +289,7 @@ body {
 ───────────────────────────────────────────── */
 .input-field {
   background: var(--zps-bg-elevated);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--zps-border);
   border-radius: 12px;
   padding: 12px 16px;
   color: var(--zps-text-primary);
@@ -269,7 +314,7 @@ body {
 ───────────────────────────────────────────── */
 .flower-card {
   position: relative;
-  background: linear-gradient(145deg, var(--zps-bg-elevated), rgba(46, 49, 72, 0.5));
+  background: linear-gradient(145deg, var(--zps-flower-card-bg-start), var(--zps-flower-card-bg-end));
   border-radius: 14px;
   padding: 16px;
   transition: all 0.35s var(--ease-bounce);
@@ -316,8 +361,8 @@ body {
 .flower-card.selected::after {
   content: '✓';
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: 5px;
+  right: 5px;
   width: 28px;
   height: 28px;
   background: linear-gradient(135deg, #00D68F, #4A90D9);
@@ -348,7 +393,7 @@ body {
 }
 
 .leaderboard-row:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--zps-overlay);
   transform: translateX(4px);
 }
 
@@ -457,4 +502,43 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(245, 166, 35, 0.4);
+}
+
+/* ─────────────────────────────────────────────
+   Light mode — aurora & component overrides
+───────────────────────────────────────────── */
+html[data-theme="light"] .aurora-bg {
+  background: var(--zps-bg-page);
+}
+
+html[data-theme="light"] .aurora-bg::before {
+  background: radial-gradient(circle, rgba(255, 80, 140, 0.45), transparent 60%);
+  opacity: 0.75;
+}
+
+html[data-theme="light"] .aurora-bg::after {
+  background: radial-gradient(circle, rgba(200, 80, 255, 0.35), transparent 60%);
+  opacity: 0.65;
+}
+
+html[data-theme="light"] .aurora-layer {
+  background:
+    radial-gradient(circle at 70% 15%, rgba(255, 180, 50, 0.22), transparent 35%),
+    radial-gradient(circle at 20% 75%, rgba(255, 100, 180, 0.20), transparent 38%),
+    radial-gradient(circle at 85% 70%, rgba(80, 200, 255, 0.15), transparent 30%),
+    radial-gradient(circle at 45% 45%, rgba(160, 60, 255, 0.10), transparent 40%);
+}
+
+html[data-theme="light"] .flower-card:hover {
+  box-shadow:
+    0 10px 28px rgba(124, 77, 255, 0.15),
+    0 0 18px rgba(245, 166, 35, 0.12);
+}
+
+html[data-theme="light"] .input-field {
+  background: #FFFFFF;
+}
+
+html[data-theme="light"] .text-gradient {
+  filter: drop-shadow(0 0 10px rgba(232, 52, 26, 0.2));
 }

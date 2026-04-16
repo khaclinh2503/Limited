@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Image from "next/image";
 import { getPlayerDetailAction } from "@/app/actions/player";
 import { PlayerModal } from "@/components/PlayerModal";
+import { SeasonModal } from "@/components/SeasonModal";
 import type { Quality } from "@prisma/client";
 
 interface LeaderboardEntry {
@@ -43,6 +44,7 @@ function displayName(entry: LeaderboardEntry) {
 export function DashboardClient({ leaderboard, totalMembers, season }: Props) {
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerDetail | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [seasonOpen, setSeasonOpen] = useState(false);
   const [, startTransition] = useTransition();
 
   const top1 = leaderboard[0] ?? null;
@@ -76,16 +78,19 @@ export function DashboardClient({ leaderboard, totalMembers, season }: Props) {
           <p className="text-xs text-[var(--zps-text-secondary)]">trong công hội</p>
         </div>
 
-        {/* Mùa hiện tại */}
-        <div className="card-gradient text-center !py-3">
+        {/* Mùa hiện tại — clickable */}
+        <button
+          onClick={() => setSeasonOpen(true)}
+          className="card-gradient text-center !py-3 w-full group transition-transform hover:-translate-y-1"
+        >
           <p className="text-xs text-[var(--zps-text-secondary)] uppercase tracking-wider mb-1">
             📅 Mùa hiện tại
           </p>
           <p className="text-xl font-bold">{season}</p>
-          <p className="text-xs text-[var(--zps-text-secondary)]">
-            {new Date().getFullYear()}
+          <p className="text-xs mt-1 transition-colors" style={{ color: "var(--zps-brand-orange)" }}>
+            Xem lịch mùa →
           </p>
-        </div>
+        </button>
 
         {/* Hạng #1 */}
         {top1 ? (
@@ -213,10 +218,15 @@ export function DashboardClient({ leaderboard, totalMembers, season }: Props) {
         )}
       </div>
 
-      {/* ── Modal ── */}
+      {/* ── Modals ── */}
       <PlayerModal
         player={selectedPlayer}
         onClose={() => setSelectedPlayer(null)}
+      />
+      <SeasonModal
+        open={seasonOpen}
+        onClose={() => setSeasonOpen(false)}
+        season={season}
       />
     </div>
   );

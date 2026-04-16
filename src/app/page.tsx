@@ -7,12 +7,14 @@ export const metadata: Metadata = {
   title: "Bảng xếp hạng — Thành Hội: LIMITED",
 };
 
+// Mùa 1 bắt đầu T3 ngày 10/3/2026 — mỗi tuần T3→CN là 1 mùa
+const SEASON_START = new Date(2026, 2, 10, 9, 0, 0); // 10/03/2026 09:00
+
 function getCurrentSeason() {
-  const month = new Date().getMonth() + 1;
-  if (month >= 3 && month <= 5) return "🌸 Mùa Xuân";
-  if (month >= 6 && month <= 8) return "☀️ Mùa Hè";
-  if (month >= 9 && month <= 11) return "🍂 Mùa Thu";
-  return "❄️ Mùa Đông";
+  const now = new Date();
+  const ms = now.getTime() - SEASON_START.getTime();
+  const season = Math.max(1, Math.floor(ms / 604_800_000) + 1);
+  return `🌸 Mùa ${season}`;
 }
 
 async function DashboardContent() {

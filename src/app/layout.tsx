@@ -26,8 +26,16 @@ export default async function RootLayout({
   const session = await auth();
 
   return (
-    <html lang="vi" className={beVietnamPro.variable}>
-      <body className="font-sans antialiased">
+    <html lang="vi" className={beVietnamPro.variable} suppressHydrationWarning>
+      <head>
+        {/* Anti-FOUC: đọc theme từ localStorage trước khi React hydrate */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <AuroraBg />
         <PetalLayer />
 

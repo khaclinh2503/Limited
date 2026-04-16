@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import type { Role } from "@prisma/client";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface NavProps {
   user?: {
@@ -37,9 +38,11 @@ export function Navigation({ user }: NavProps) {
       <div
         className="mx-auto flex items-center justify-between px-4 py-3 max-w-5xl"
         style={{
-          background: "rgba(19, 21, 31, 0.75)",
+          background: "var(--zps-nav-bg)",
           backdropFilter: "blur(16px)",
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          WebkitBackdropFilter: "blur(16px)",
+          borderBottom: "1px solid var(--zps-nav-border)",
+          transition: "background 0.25s ease, border-color 0.25s ease",
         }}
       >
         {/* Logo */}
@@ -61,8 +64,8 @@ export function Navigation({ user }: NavProps) {
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150
                   ${
                     active
-                      ? "bg-[var(--zps-bg-elevated)] text-white"
-                      : "text-[var(--zps-text-secondary)] hover:text-white hover:bg-white/5"
+                      ? "bg-[var(--zps-bg-elevated)] text-[var(--zps-text-primary)]"
+                      : "text-[var(--zps-text-secondary)] hover:text-[var(--zps-text-primary)] hover:bg-[var(--zps-overlay)]"
                   }`}
               >
                 {link.label}
@@ -71,13 +74,16 @@ export function Navigation({ user }: NavProps) {
           })}
         </div>
 
+        {/* Theme toggle */}
+        <ThemeToggle />
+
         {/* Auth area */}
         <div className="relative shrink-0">
           {user ? (
             <>
               <button
                 onClick={() => setDropdownOpen((v) => !v)}
-                className="flex items-center gap-2 p-1 rounded-full hover:bg-white/10 transition-colors"
+                className="flex items-center gap-2 p-1 rounded-full hover:bg-[var(--zps-overlay)] transition-colors"
                 aria-label="Tài khoản"
               >
                 {user.image ? (
@@ -107,11 +113,11 @@ export function Navigation({ user }: NavProps) {
                     className="absolute right-0 top-12 z-50 min-w-[200px] rounded-xl p-2 space-y-1"
                     style={{
                       background: "var(--zps-bg-elevated)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+                      border: "1px solid var(--zps-border)",
+                      boxShadow: "0 8px 32px var(--zps-dropdown-shadow)",
                     }}
                   >
-                    <div className="px-3 py-2 border-b border-white/10 mb-1">
+                    <div className="px-3 py-2 mb-1" style={{ borderBottom: "1px solid var(--zps-border-divider)" }}>
                       <p className="text-sm font-medium truncate">{user.name}</p>
                       <p className="text-xs text-[var(--zps-text-secondary)] truncate">
                         {user.email}
