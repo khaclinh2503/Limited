@@ -61,6 +61,12 @@ interface FlowerForm {
 const EMPTY_FORM: FlowerForm = { name: "", quality: "DO", imageUrl: "" };
 
 /* ── Main component ── */
+/* ── Quality tabs (shared) ── */
+const QUALITY_TABS: (Quality | "ALL")[] = ["ALL", "DO", "CAM", "TIM", "XANH_LAM", "XANH_LAC"];
+const QUALITY_TAB_LABEL: Record<Quality | "ALL", string> = {
+  ALL: "Tất cả", DO: "Đỏ", CAM: "Cam", TIM: "Tím", XANH_LAC: "Xanh lá", XANH_LAM: "Xanh lam",
+};
+
 export function AdminClient({ flowers, users, seasons, isAdmin }: Props) {
   const [tab, setTab] = useState<"flowers" | "members" | "seasons">("flowers");
 
@@ -520,11 +526,6 @@ function FlowerCatalogTab({ flowers, isAdmin }: { flowers: Flower[]; isAdmin: bo
 /* ══════════════════════════════════════════
    Tab Thành Viên
 ══════════════════════════════════════════ */
-const QUALITY_TABS: (Quality | "ALL")[] = ["ALL", "DO", "CAM", "TIM", "XANH_LAM", "XANH_LAC"];
-const QUALITY_TAB_LABEL: Record<Quality | "ALL", string> = {
-  ALL: "Tất cả", DO: "Đỏ", CAM: "Cam", TIM: "Tím", XANH_LAC: "Xanh lá", XANH_LAM: "Xanh lam",
-};
-
 function MembersTab({ users, flowers, isAdmin }: { users: User[]; flowers: Flower[]; isAdmin: boolean }) {
   const [isPending, startTransition] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState<User | null>(null);
@@ -892,6 +893,7 @@ function Modal({
           <h3 className="font-bold text-lg">{title}</h3>
           <button
             onClick={onClose}
+            aria-label="Đóng"
             className="text-[var(--zps-text-secondary)] hover:text-white text-xl leading-none"
           >
             ✕
@@ -1037,8 +1039,8 @@ function SeasonsTab({ seasons, isAdmin }: { seasons: SeasonResult[]; isAdmin: bo
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: "1px solid var(--zps-border-divider)" }}>
-                {["Mùa", "Hạng đấu", "Thứ hạng", "Điểm", ""].map((h) => (
-                  <th key={h} className="px-5 py-3 text-left text-xs uppercase tracking-wider text-[var(--zps-text-secondary)] font-medium">
+                {["Mùa", "Hạng đấu", "Thứ hạng", "Điểm", ""].map((h, i) => (
+                  <th key={i} className="px-5 py-3 text-left text-xs uppercase tracking-wider text-[var(--zps-text-secondary)] font-medium">
                     {h}
                   </th>
                 ))}
@@ -1066,8 +1068,8 @@ function SeasonsTab({ seasons, isAdmin }: { seasons: SeasonResult[]; isAdmin: bo
                   <td className="px-5 py-3 font-bold tabular-nums" style={{ color: "var(--zps-text-accent)" }}>
                     {s.points.toLocaleString("vi-VN")}
                   </td>
-                  {isAdmin && (
-                    <td className="px-5 py-3">
+                  <td className="px-5 py-3">
+                    {isAdmin && (
                       <div className="flex items-center gap-2 justify-end">
                         <button
                           onClick={() => openEdit(s)}
@@ -1084,8 +1086,8 @@ function SeasonsTab({ seasons, isAdmin }: { seasons: SeasonResult[]; isAdmin: bo
                           Xóa
                         </button>
                       </div>
-                    </td>
-                  )}
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
