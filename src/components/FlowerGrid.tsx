@@ -158,7 +158,7 @@ export function FlowerGrid({ flowers, ownedFlowerIds }: Props) {
             <p className="text-sm">Không tìm thấy hoa nào</p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 xl:grid-cols-5 gap-2">
+          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-2">
             {filtered.map((flower) => {
               const isSelected = selected.has(flower.id);
               const color = qualityColor[flower.quality];
@@ -178,7 +178,7 @@ export function FlowerGrid({ flowers, ownedFlowerIds }: Props) {
                 >
                   {/* Ảnh hoa */}
                   <div
-                    className="w-[64px] h-[64px] rounded-lg overflow-hidden flex items-center justify-center mb-2 shrink-0"
+                    className="w-full aspect-square rounded-lg overflow-hidden flex items-center justify-center mb-1 shrink-0"
                     style={{
                       background: "var(--zps-bg-page)",
                       border: `1.5px solid ${isSelected ? color : "rgba(255,255,255,0.06)"}`,
@@ -198,7 +198,7 @@ export function FlowerGrid({ flowers, ownedFlowerIds }: Props) {
 
                   {/* Tên hoa — chiều cao cố định để các cell thẳng hàng */}
                   <p
-                    className="text-[11px] leading-tight line-clamp-2 font-medium w-full text-center h-8 overflow-hidden"
+                    className="text-[10px] leading-tight line-clamp-2 break-words font-medium w-full text-center overflow-hidden"
                     style={{ color: isSelected ? color : "var(--zps-text-secondary)" }}
                   >
                     {flower.name}
