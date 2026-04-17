@@ -7,10 +7,12 @@ import {
   createFlowerType,
   updateFlowerType,
   deleteFlowerType,
+  getUnmappedFlowerImages,
 } from "@/app/actions/flower-types";
 import { approveUser, updateUserRole, deleteUser } from "@/app/actions/admin";
 import { upsertSeasonResult, deleteSeasonResult } from "@/app/actions/seasons";
 import type { Quality, Role } from "@prisma/client";
+import { FlowerOwnersModal } from "@/components/FlowerOwnersModal";
 
 /* ── Types ── */
 interface Flower {
@@ -46,6 +48,7 @@ interface Props {
   flowers: Flower[];
   users: User[];
   seasons: SeasonResult[];
+  isAdmin: boolean;
 }
 
 /* ── Flower modal form ── */
@@ -58,7 +61,7 @@ interface FlowerForm {
 const EMPTY_FORM: FlowerForm = { name: "", quality: "DO", imageUrl: "" };
 
 /* ── Main component ── */
-export function AdminClient({ flowers, users, seasons }: Props) {
+export function AdminClient({ flowers, users, seasons, isAdmin }: Props) {
   const [tab, setTab] = useState<"flowers" | "members" | "seasons">("flowers");
 
   return (
@@ -98,11 +101,11 @@ export function AdminClient({ flowers, users, seasons }: Props) {
 
       <div className="flex-1 min-h-0">
         {tab === "flowers" ? (
-          <FlowerCatalogTab flowers={flowers} />
+          <FlowerCatalogTab flowers={flowers} isAdmin={isAdmin} />
         ) : tab === "members" ? (
-          <MembersTab users={users} flowers={flowers} />
+          <MembersTab users={users} flowers={flowers} isAdmin={isAdmin} />
         ) : (
-          <SeasonsTab seasons={seasons} />
+          <SeasonsTab seasons={seasons} isAdmin={isAdmin} />
         )}
       </div>
     </div>
@@ -112,7 +115,7 @@ export function AdminClient({ flowers, users, seasons }: Props) {
 /* ══════════════════════════════════════════
    Tab Catalog Hoa
 ══════════════════════════════════════════ */
-function FlowerCatalogTab({ flowers }: { flowers: Flower[] }) {
+function FlowerCatalogTab({ flowers, isAdmin }: { flowers: Flower[]; isAdmin: boolean }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Flower | null>(null);
   const [form, setForm] = useState<FlowerForm>(EMPTY_FORM);
@@ -120,7 +123,11 @@ function FlowerCatalogTab({ flowers }: { flowers: Flower[] }) {
   const [confirmDelete, setConfirmDelete] = useState<Flower | null>(null);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [flowerOwnersTarget, setFlowerOwnersTarget] = useState<Flower | null>(null);
   const [qualityFilter, setQualityFilter] = useState<Quality | "ALL">("ALL");
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [unmappedImages, setUnmappedImages] = useState<string[]>([]);
+  const [pickerLoading, setPickerLoading] = useState(false);
 
   function openAdd() {
     setEditing(null);
@@ -153,6 +160,14 @@ function FlowerCatalogTab({ flowers }: { flowers: Flower[] }) {
     });
   }
 
+  async function openPicker() {
+    setPickerLoading(true);
+    setPickerOpen(true);
+    const images = await getUnmappedFlowerImages();
+    setUnmappedImages(images);
+    setPickerLoading(false);
+  }
+
   function confirmAndDelete(f: Flower) {
     startTransition(async () => {
       await deleteFlowerType(f.id);
@@ -178,9 +193,11 @@ function FlowerCatalogTab({ flowers }: { flowers: Flower[] }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <button onClick={openAdd} className="btn-primary py-2 px-4 text-sm rounded-lg shrink-0">
-            + Thêm loại hoa
-          </button>
+          {isAdmin && (
+            <button onClick={openAdd} className="btn-primary py-2 px-4 text-sm rounded-lg shrink-0">
+              + Thêm loại hoa
+            </button>
+          )}
         </div>
         <div className="flex flex-wrap gap-2">
           {QUALITY_TABS.map((q) => {
@@ -224,58 +241,116 @@ function FlowerCatalogTab({ flowers }: { flowers: Flower[] }) {
 
       {/* Flower list */}
       <div className="card-gradient !p-0 flex-1 min-h-0 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto divide-y divide-white/5">
+        <div className="flex-1 overflow-y-auto">
           {filtered.length === 0 && (
             <div className="text-center py-12 text-[var(--zps-text-secondary)]">
               <p className="text-3xl mb-2">🌱</p>
               <p className="text-sm">{flowers.length === 0 ? "Chưa có hoa nào trong catalog" : "Không tìm thấy hoa nào"}</p>
             </div>
           )}
-          {filtered.map((f) => {
-            const color = qualityColor[f.quality];
-            return (
-              <div key={f.id} className="flex items-center gap-4 px-5 py-3">
-                {/* Thumbnail */}
+
+          {/* Mobile cards */}
+          <div className="block sm:hidden divide-y divide-white/5">
+            {filtered.map((f) => {
+              const color = qualityColor[f.quality];
+              return (
                 <div
-                  className="w-12 h-12 rounded-lg overflow-hidden shrink-0 flex items-center justify-center"
-                  style={{ background: "var(--zps-bg-elevated)", border: `2px solid ${color}` }}
+                  key={f.id}
+                  className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[var(--zps-overlay)] transition-colors"
+                  onClick={() => setFlowerOwnersTarget(f)}
                 >
-                  {f.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={f.imageUrl} alt={f.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-xl">🌸</span>
+                  <div
+                    className="w-10 h-10 rounded-lg overflow-hidden shrink-0 flex items-center justify-center"
+                    style={{ background: "var(--zps-bg-elevated)", border: `2px solid ${color}` }}
+                  >
+                    {f.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={f.imageUrl} alt={f.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-lg">🌸</span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{f.name}</p>
+                    <p className="text-xs" style={{ color }}>
+                      {qualityLabel[f.quality]} · {f._count.ownerships} sở hữu
+                    </p>
+                  </div>
+                  {isAdmin && (
+                    <div className="flex gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => openEdit(f)}
+                        className="btn-secondary py-1 px-2.5 text-xs rounded-lg"
+                      >
+                        Sửa
+                      </button>
+                      <button
+                        onClick={() => setConfirmDelete(f)}
+                        className="py-1 px-2.5 text-xs rounded-lg font-semibold text-red-400 hover:bg-red-500/10 transition-colors"
+                      >
+                        Xóa
+                      </button>
+                    </div>
                   )}
                 </div>
+              );
+            })}
+          </div>
 
-                {/* Name + quality */}
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">{f.name}</p>
-                  <p className="text-xs font-semibold" style={{ color }}>
-                    {qualityLabel[f.quality]} · {f._count.ownerships} thành viên sở hữu
-                  </p>
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-2 shrink-0">
-                  <button
-                    onClick={() => openEdit(f)}
-                    className="btn-secondary py-1.5 px-3 text-xs rounded-lg"
+          {/* Desktop rows */}
+          <div className="hidden sm:block divide-y divide-white/5">
+            {filtered.map((f) => {
+              const color = qualityColor[f.quality];
+              return (
+                <div
+                  key={f.id}
+                  className="flex items-center gap-4 px-5 py-3 cursor-pointer hover:bg-[var(--zps-overlay)] transition-colors"
+                  onClick={() => setFlowerOwnersTarget(f)}
+                >
+                  <div
+                    className="w-12 h-12 rounded-lg overflow-hidden shrink-0 flex items-center justify-center"
+                    style={{ background: "var(--zps-bg-elevated)", border: `2px solid ${color}` }}
                   >
-                    Sửa
-                  </button>
-                  <button
-                    onClick={() => setConfirmDelete(f)}
-                    className="py-1.5 px-3 text-xs rounded-lg font-semibold transition-colors text-red-400 hover:bg-red-500/10"
-                  >
-                    Xóa
-                  </button>
+                    {f.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={f.imageUrl} alt={f.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xl">🌸</span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{f.name}</p>
+                    <p className="text-xs font-semibold" style={{ color }}>
+                      {qualityLabel[f.quality]} · {f._count.ownerships} thành viên sở hữu
+                    </p>
+                  </div>
+                  {isAdmin && (
+                    <div className="flex gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => openEdit(f)}
+                        className="btn-secondary py-1.5 px-3 text-xs rounded-lg"
+                      >
+                        Sửa
+                      </button>
+                      <button
+                        onClick={() => setConfirmDelete(f)}
+                        className="py-1.5 px-3 text-xs rounded-lg font-semibold transition-colors text-red-400 hover:bg-red-500/10"
+                      >
+                        Xóa
+                      </button>
+                    </div>
+                  )}
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
+
+      <FlowerOwnersModal
+        flower={flowerOwnersTarget}
+        onClose={() => setFlowerOwnersTarget(null)}
+      />
 
       {/* Add/Edit modal */}
       {modalOpen && (
@@ -313,18 +388,44 @@ function FlowerCatalogTab({ flowers }: { flowers: Flower[] }) {
             </div>
 
             <div>
-              <label className="field-label">URL ảnh (tùy chọn)</label>
-              <input
-                className="input-field"
-                placeholder="https://..."
-                value={form.imageUrl}
-                onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
-              />
-              {form.imageUrl && (
-                <div className="mt-2 w-16 h-16 rounded-lg overflow-hidden border border-white/10">
+              <label className="field-label">Ảnh hoa (tùy chọn)</label>
+              {form.imageUrl ? (
+                <div className="flex items-center gap-3 mt-1.5">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={form.imageUrl} alt="preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  <img
+                    src={form.imageUrl}
+                    alt="preview"
+                    className="w-16 h-16 rounded-lg object-cover border border-white/10 shrink-0"
+                    onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0.3"; }}
+                  />
+                  <div className="flex flex-col gap-2 min-w-0">
+                    <p className="text-xs text-[var(--zps-text-secondary)] truncate">{form.imageUrl.split("/").pop()}</p>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={openPicker}
+                        className="btn-secondary py-1 px-3 text-xs rounded-lg"
+                      >
+                        Thay ảnh
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setForm((f) => ({ ...f, imageUrl: "" }))}
+                        className="py-1 px-3 text-xs rounded-lg font-semibold text-red-400 hover:bg-red-500/10 transition-colors"
+                      >
+                        Xóa ảnh
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={openPicker}
+                  className="mt-1.5 w-full py-3 rounded-xl border-2 border-dashed border-white/20 text-sm text-[var(--zps-text-secondary)] hover:border-white/40 hover:text-white transition-all"
+                >
+                  + Chọn ảnh từ thư mục
+                </button>
               )}
             </div>
 
@@ -343,6 +444,49 @@ function FlowerCatalogTab({ flowers }: { flowers: Flower[] }) {
               </button>
             </div>
           </div>
+        </Modal>
+      )}
+
+      {/* Image picker modal */}
+      {pickerOpen && (
+        <Modal title="Chọn ảnh hoa" onClose={() => setPickerOpen(false)}>
+          {pickerLoading ? (
+            <div className="text-center py-10 text-[var(--zps-text-secondary)]">
+              <p className="text-2xl mb-2 animate-spin">⏳</p>
+              <p className="text-sm">Đang tải danh sách ảnh...</p>
+            </div>
+          ) : unmappedImages.length === 0 ? (
+            <div className="text-center py-10 text-[var(--zps-text-secondary)]">
+              <p className="text-3xl mb-2">🗂️</p>
+              <p className="text-sm font-medium text-white mb-1">Không có ảnh chưa map</p>
+              <p className="text-xs">Copy ảnh vào thư mục <code className="bg-white/10 px-1.5 py-0.5 rounded">public/flowers/</code> rồi thử lại.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-xs text-[var(--zps-text-secondary)]">
+                {unmappedImages.length} ảnh chưa được gán — click để chọn
+              </p>
+              <div className="grid grid-cols-4 gap-2 max-h-72 overflow-y-auto pr-1">
+                {unmappedImages.map((src) => (
+                  <button
+                    key={src}
+                    type="button"
+                    onClick={() => {
+                      setForm((f) => ({ ...f, imageUrl: src }));
+                      setPickerOpen(false);
+                    }}
+                    className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-[var(--zps-brand-orange)] transition-all"
+                    style={{ background: "var(--zps-bg-elevated)" }}
+                    title={src.split("/").pop()}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={src} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </Modal>
       )}
 
@@ -381,7 +525,7 @@ const QUALITY_TAB_LABEL: Record<Quality | "ALL", string> = {
   ALL: "Tất cả", DO: "Đỏ", CAM: "Cam", TIM: "Tím", XANH_LAC: "Xanh lá", XANH_LAM: "Xanh lam",
 };
 
-function MembersTab({ users, flowers }: { users: User[]; flowers: Flower[] }) {
+function MembersTab({ users, flowers, isAdmin }: { users: User[]; flowers: Flower[]; isAdmin: boolean }) {
   const [isPending, startTransition] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState<User | null>(null);
   const [nameSearch, setNameSearch] = useState("");
@@ -565,90 +709,132 @@ function MembersTab({ users, flowers }: { users: User[]; flowers: Flower[] }) {
 
       {/* ── Danh sách ── */}
       <div className="card-gradient !p-0 flex-1 min-h-0 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto divide-y divide-white/5">
+        <div className="flex-1 overflow-y-auto">
           {filtered.length === 0 && (
             <div className="text-center py-12 text-[var(--zps-text-secondary)]">
               <p className="text-3xl mb-2">🔍</p>
               <p className="text-sm">Không tìm thấy thành viên nào</p>
             </div>
           )}
-          {filtered.map((u) => (
-            <div
-              key={u.id}
-              className="flex items-center gap-4 px-5 py-3"
-              style={!u.approved ? { background: "rgba(232,52,26,0.05)", borderLeft: "3px solid #E8341A" } : {}}
-            >
-              {/* Avatar */}
-              {u.image ? (
-                <Image src={u.image} alt={displayName(u)} width={40} height={40} className="rounded-full shrink-0" />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-[var(--zps-bg-elevated)] flex items-center justify-center text-sm font-bold shrink-0">
-                  {displayName(u)[0].toUpperCase()}
-                </div>
-              )}
 
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="font-medium truncate">{displayName(u)}</p>
-                  {!u.approved && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "#E8341A22", color: "#E8341A" }}>
-                      Chờ duyệt
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-[var(--zps-text-secondary)] truncate">{u.email}</p>
-                <p className="text-xs text-[var(--zps-text-secondary)]">🌸 {u._count.ownerships} loại hoa</p>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-2 shrink-0">
-                {!u.approved ? (
-                  // Chưa duyệt → chỉ hiện nút Duyệt + Xóa
-                  <>
-                    <button
-                      onClick={() => approve(u.id)}
-                      disabled={isPending}
-                      className="py-1.5 px-3 text-xs rounded-lg font-bold transition-colors disabled:opacity-50"
-                      style={{ background: "var(--zps-accent-green)", color: "#fff" }}
-                    >
-                      ✓ Duyệt
-                    </button>
-                    <button
-                      onClick={() => setConfirmDelete(u)}
-                      className="py-1.5 px-3 text-xs rounded-lg font-semibold text-red-400 hover:bg-red-500/10 transition-colors"
-                    >
-                      Xóa
-                    </button>
-                  </>
+          {/* Mobile cards */}
+          <div className="block sm:hidden divide-y divide-white/5">
+            {filtered.map((u) => (
+              <div
+                key={u.id}
+                className="flex items-center gap-3 px-4 py-3"
+                style={!u.approved ? { borderLeft: "3px solid #E8341A", background: "rgba(232,52,26,0.04)" } : {}}
+              >
+                {u.image ? (
+                  <Image src={u.image} alt={displayName(u)} width={36} height={36} className="rounded-full shrink-0" />
                 ) : (
-                  // Đã duyệt → hiện role toggle + Xóa
-                  <>
-                    <select
-                      value={u.role}
-                      onChange={(e) => changeRole(u.id, e.target.value as "MEMBER" | "ADMIN")}
-                      disabled={isPending}
-                      className="text-xs rounded-lg px-2 py-1.5 font-semibold cursor-pointer disabled:opacity-50"
-                      style={{
-                        background: u.role === "ADMIN" ? "var(--zps-brand-gradient)" : "var(--zps-bg-elevated)",
-                        color: "#fff",
-                        border: "1px solid rgba(255,255,255,0.1)",
-                      }}
-                    >
-                      <option value="MEMBER">Thành viên</option>
-                      <option value="ADMIN">Quản trị</option>
-                    </select>
-                    <button
-                      onClick={() => setConfirmDelete(u)}
-                      className="py-1.5 px-3 text-xs rounded-lg font-semibold text-red-400 hover:bg-red-500/10 transition-colors"
-                    >
-                      Xóa
-                    </button>
-                  </>
+                  <div className="w-9 h-9 rounded-full bg-[var(--zps-bg-elevated)] flex items-center justify-center text-xs font-bold shrink-0">
+                    {displayName(u)[0].toUpperCase()}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <p className="text-sm font-medium truncate">{displayName(u)}</p>
+                    {!u.approved && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "#E8341A22", color: "#E8341A" }}>
+                        Chờ duyệt
+                      </span>
+                    )}
+                    {u.approved && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: u.role === "ADMIN" ? "var(--zps-brand-gradient)" : "var(--zps-bg-elevated)", color: "#fff" }}>
+                        {u.role === "ADMIN" ? "Admin" : "Member"}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[var(--zps-text-secondary)] truncate">🌸 {u._count.ownerships} loại</p>
+                </div>
+                {isAdmin && (
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {!u.approved ? (
+                      <>
+                        <button
+                          onClick={() => approve(u.id)}
+                          disabled={isPending}
+                          className="py-1 px-2 text-xs rounded-lg font-bold disabled:opacity-50"
+                          style={{ background: "var(--zps-accent-green)", color: "#fff" }}
+                        >
+                          ✓
+                        </button>
+                        <button
+                          onClick={() => setConfirmDelete(u)}
+                          className="py-1 px-2 text-xs rounded-lg font-semibold text-red-400 hover:bg-red-500/10"
+                        >
+                          Xóa
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => setConfirmDelete(u)}
+                        className="py-1 px-2 text-xs rounded-lg font-semibold text-red-400 hover:bg-red-500/10"
+                      >
+                        Xóa
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {/* Desktop rows */}
+          <div className="hidden sm:block divide-y divide-white/5">
+            {filtered.map((u) => (
+              <div
+                key={u.id}
+                className="flex items-center gap-4 px-5 py-3"
+                style={!u.approved ? { background: "rgba(232,52,26,0.05)", borderLeft: "3px solid #E8341A" } : {}}
+              >
+                {u.image ? (
+                  <Image src={u.image} alt={displayName(u)} width={40} height={40} className="rounded-full shrink-0" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-[var(--zps-bg-elevated)] flex items-center justify-center text-sm font-bold shrink-0">
+                    {displayName(u)[0].toUpperCase()}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium truncate">{displayName(u)}</p>
+                    {!u.approved && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "#E8341A22", color: "#E8341A" }}>
+                        Chờ duyệt
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[var(--zps-text-secondary)] truncate">{u.email}</p>
+                  <p className="text-xs text-[var(--zps-text-secondary)]">🌸 {u._count.ownerships} loại hoa</p>
+                </div>
+                {isAdmin && (
+                  <div className="flex items-center gap-2 shrink-0">
+                    {!u.approved ? (
+                      <>
+                        <button onClick={() => approve(u.id)} disabled={isPending} className="py-1.5 px-3 text-xs rounded-lg font-bold transition-colors disabled:opacity-50" style={{ background: "var(--zps-accent-green)", color: "#fff" }}>
+                          ✓ Duyệt
+                        </button>
+                        <button onClick={() => setConfirmDelete(u)} className="py-1.5 px-3 text-xs rounded-lg font-semibold text-red-400 hover:bg-red-500/10 transition-colors">
+                          Xóa
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <select value={u.role} onChange={(e) => changeRole(u.id, e.target.value as "MEMBER" | "ADMIN")} disabled={isPending} className="text-xs rounded-lg px-2 py-1.5 font-semibold cursor-pointer disabled:opacity-50" style={{ background: u.role === "ADMIN" ? "var(--zps-brand-gradient)" : "var(--zps-bg-elevated)", color: "#fff", border: "1px solid rgba(255,255,255,0.1)" }}>
+                          <option value="MEMBER">Thành viên</option>
+                          <option value="ADMIN">Quản trị</option>
+                        </select>
+                        <button onClick={() => setConfirmDelete(u)} className="py-1.5 px-3 text-xs rounded-lg font-semibold text-red-400 hover:bg-red-500/10 transition-colors">
+                          Xóa
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -739,7 +925,7 @@ interface SeasonForm {
 
 const EMPTY_SEASON: SeasonForm = { season: "", tier: "D", rank: "1", points: "" };
 
-function SeasonsTab({ seasons }: { seasons: SeasonResult[] }) {
+function SeasonsTab({ seasons, isAdmin }: { seasons: SeasonResult[]; isAdmin: boolean }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<SeasonResult | null>(null);
   const [form, setForm] = useState<SeasonForm>(EMPTY_SEASON);
@@ -798,19 +984,56 @@ function SeasonsTab({ seasons }: { seasons: SeasonResult[] }) {
         <p className="text-sm text-[var(--zps-text-secondary)]">
           {seasons.length} mùa đã ghi nhận
         </p>
-        <button onClick={openAdd} className="btn-primary !py-2 !px-4 text-sm">
-          + Thêm mùa
-        </button>
+        {isAdmin && (
+          <button onClick={openAdd} className="btn-primary !py-2 !px-4 text-sm">
+            + Thêm mùa
+          </button>
+        )}
       </div>
 
-      {/* Table */}
-      <div className="card-gradient !p-0 overflow-hidden">
-        {seasons.length === 0 ? (
-          <div className="text-center py-12 text-[var(--zps-text-secondary)]">
-            <p className="text-3xl mb-2">🏆</p>
-            <p className="text-sm">Chưa có dữ liệu mùa nào</p>
-          </div>
-        ) : (
+      {/* Mobile cards */}
+      {seasons.length > 0 && (
+        <div className="block sm:hidden card-gradient !p-0 divide-y divide-white/5">
+          {seasons.map((s) => (
+            <div key={s.id} className="flex items-center gap-3 px-4 py-3">
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-sm">Mùa {s.season}</p>
+                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span
+                    className="text-xs px-2 py-0.5 rounded-lg font-bold"
+                    style={{
+                      background: `${TIER_COLOR[s.tier] ?? "#888"}22`,
+                      color: TIER_COLOR[s.tier] ?? "#888",
+                      border: `1px solid ${TIER_COLOR[s.tier] ?? "#888"}44`,
+                    }}
+                  >
+                    Hạng {s.tier}
+                  </span>
+                  <span className="text-xs text-[var(--zps-text-secondary)]">
+                    {s.rank === 1 ? "🥇" : s.rank === 2 ? "🥈" : s.rank === 3 ? "🥉" : `#${s.rank}`} · {s.points} điểm
+                  </span>
+                </div>
+              </div>
+              {isAdmin && (
+                <div className="flex gap-2 shrink-0">
+                  <button onClick={() => openEdit(s)} className="btn-secondary py-1 px-2.5 text-xs rounded-lg">Sửa</button>
+                  <button onClick={() => confirmDel(s)} className="py-1 px-2.5 text-xs rounded-lg font-semibold text-red-400 hover:bg-red-500/10">Xóa</button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+      {seasons.length === 0 && (
+        <div className="card-gradient text-center py-12 text-[var(--zps-text-secondary)]">
+          <p className="text-3xl mb-2">🏆</p>
+          <p className="text-sm">Chưa có dữ liệu mùa nào</p>
+        </div>
+      )}
+
+      {/* Desktop table */}
+      {seasons.length > 0 && (
+        <div className="hidden sm:block card-gradient !p-0 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: "1px solid var(--zps-border-divider)" }}>
@@ -843,30 +1066,32 @@ function SeasonsTab({ seasons }: { seasons: SeasonResult[] }) {
                   <td className="px-5 py-3 font-bold tabular-nums" style={{ color: "var(--zps-text-accent)" }}>
                     {s.points.toLocaleString("vi-VN")}
                   </td>
-                  <td className="px-5 py-3">
-                    <div className="flex items-center gap-2 justify-end">
-                      <button
-                        onClick={() => openEdit(s)}
-                        className="text-xs px-2.5 py-1 rounded-lg transition-colors"
-                        style={{ background: "var(--zps-bg-elevated)", color: "var(--zps-text-secondary)" }}
-                      >
-                        Sửa
-                      </button>
-                      <button
-                        onClick={() => confirmDel(s)}
-                        className="text-xs px-2.5 py-1 rounded-lg transition-colors hover:bg-red-500/10"
-                        style={{ color: "#E8341A" }}
-                      >
-                        Xóa
-                      </button>
-                    </div>
-                  </td>
+                  {isAdmin && (
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-2 justify-end">
+                        <button
+                          onClick={() => openEdit(s)}
+                          className="text-xs px-2.5 py-1 rounded-lg transition-colors"
+                          style={{ background: "var(--zps-bg-elevated)", color: "var(--zps-text-secondary)" }}
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          onClick={() => confirmDel(s)}
+                          className="text-xs px-2.5 py-1 rounded-lg transition-colors hover:bg-red-500/10"
+                          style={{ color: "#E8341A" }}
+                        >
+                          Xóa
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Add / Edit modal */}
       {modalOpen && (

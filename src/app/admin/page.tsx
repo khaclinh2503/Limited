@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { AdminClient } from "@/components/AdminClient";
 import { sortFlowersByQuality } from "@/lib/sort";
@@ -8,6 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminPage() {
+  const session = await auth();
+  const isAdmin = session?.user?.role === "ADMIN";
+
   const [rawFlowers, users, seasons] = await Promise.all([
     prisma.flowerType.findMany({
       orderBy: { name: "asc" },
@@ -24,5 +28,5 @@ export default async function AdminPage() {
   ]);
 
   const flowers = sortFlowersByQuality(rawFlowers);
-  return <AdminClient flowers={flowers} users={users} seasons={seasons} />;
+  return <AdminClient flowers={flowers} users={users} seasons={seasons} isAdmin={isAdmin} />;
 }
