@@ -38,6 +38,7 @@ export function StatsClient({ user, flowers, ownedFlowerIds }: Props) {
   });
   const [isPending, startTransition] = useTransition();
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
+  const [activeTab, setActiveTab] = useState<"flowers" | "profile">("flowers");
 
   function showToast(msg: string, ok: boolean) {
     setToast({ msg, ok });
@@ -64,10 +65,27 @@ export function StatsClient({ user, flowers, ownedFlowerIds }: Props) {
         <h1 className="text-2xl font-bold">Bộ sưu tập của tôi</h1>
       </div>
 
+      {/* Tab bar — mobile only */}
+      <div className="flex lg:hidden gap-2 shrink-0">
+        {(["flowers", "profile"] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`flex-1 py-2 rounded-xl text-sm font-semibold transition-all duration-150 ${
+              activeTab === tab
+                ? "bg-[var(--zps-bg-elevated)] text-[var(--zps-text-primary)]"
+                : "text-[var(--zps-text-secondary)] hover:text-[var(--zps-text-primary)]"
+            }`}
+          >
+            {tab === "flowers" ? "🌸 Hoa của tôi" : "👤 Hồ sơ"}
+          </button>
+        ))}
+      </div>
+
       {/* 2-column layout */}
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* ── Cột trái: Profile ── */}
-        <div className="card-gradient flex flex-col gap-4 overflow-y-auto">
+        <div className={`card-gradient flex flex-col gap-4 overflow-y-auto ${activeTab === "profile" ? "block" : "hidden"} lg:block`}>
           {/* Avatar */}
           <div className="flex flex-col items-center gap-3 pb-4 border-b border-white/10">
             {user?.image ? (
@@ -161,7 +179,7 @@ export function StatsClient({ user, flowers, ownedFlowerIds }: Props) {
         </div>
 
         {/* ── Cột phải: Flower grid ── */}
-        <div className="lg:col-span-2 card-gradient flex flex-col">
+        <div className={`lg:col-span-2 card-gradient flex flex-col ${activeTab === "flowers" ? "block" : "hidden"} lg:block`}>
           <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
             <div>
               <h2 className="font-bold text-lg">Hoa đang sở hữu</h2>
