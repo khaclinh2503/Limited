@@ -18,9 +18,9 @@ interface NavProps {
 }
 
 const navLinks = [
-  { href: "/", label: "Bảng xếp hạng" },
-  { href: "/stats", label: "Hoa của tôi", requireAuth: true },
-  { href: "/admin", label: "Quản trị", requireAdmin: true },
+  { href: "/", label: "Bảng xếp hạng", icon: "🏆" },
+  { href: "/stats", label: "Hoa của tôi", icon: "🌸", requireAuth: true },
+  { href: "/admin", label: "Quản trị", icon: "⚙️", requireAdmin: true },
 ];
 
 export function Navigation({ user }: NavProps) {
@@ -49,7 +49,7 @@ export function Navigation({ user }: NavProps) {
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <span className="text-xl">🌸</span>
           <span className="font-bold text-sm sm:text-base text-gradient">
-            Thành Hội: LIMITED
+            <span className="hidden sm:inline">Thành Hội: </span>LIMITED
           </span>
         </Link>
 
@@ -61,14 +61,15 @@ export function Navigation({ user }: NavProps) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150
+                className={`px-2 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150
                   ${
                     active
                       ? "bg-[var(--zps-bg-elevated)] text-[var(--zps-text-primary)]"
                       : "text-[var(--zps-text-secondary)] hover:text-[var(--zps-text-primary)] hover:bg-[var(--zps-overlay)]"
                   }`}
               >
-                {link.label}
+                <span>{link.icon}</span>
+                <span className="hidden sm:inline ml-1">{link.label}</span>
               </Link>
             );
           })}
