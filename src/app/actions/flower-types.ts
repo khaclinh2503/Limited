@@ -1,5 +1,7 @@
 "use server";
 
+import { readdir } from "fs/promises";
+import { join } from "path";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
@@ -16,7 +18,7 @@ async function requireAdmin() {
 const FlowerSchema = z.object({
   name: z.string().min(1, "Tên không được trống").max(100),
   quality: z.enum(["DO", "CAM", "TIM", "XANH_LAC", "XANH_LAM"]),
-  imageUrl: z.string().url("URL không hợp lệ").optional().or(z.literal("")),
+  imageUrl: z.string().max(500).optional().or(z.literal("")),
 });
 
 export async function createFlowerType(data: z.infer<typeof FlowerSchema>) {
@@ -63,6 +65,28 @@ export async function deleteFlowerType(id: string) {
   revalidatePath("/admin");
   revalidatePath("/stats");
   revalidatePath("/");
+}
+
+export async function getUnmappedFlowerImages(): Promise<string[]> {
+  await requireAdmin();
+  try {
+    const dir = join(process.cwd(), "public", "flowers");
+    const files = await readdir(dir);
+    const imageFiles = files.filter((f) => /\.(jpg|jpeg|png|webp|gif)$/i.test(f));
+
+    const mapped = await prisma.flowerType.findMany({
+      where: { imageUrl: { not: null } },
+      select: { imageUrl: true },
+    });
+    const mappedSet = new Set(mapped.map((f) => f.imageUrl));
+
+    return imageFiles
+      .filter((f) => !mappedSet.has(`/flowers/${f}`))
+      .map((f) => `/flowers/${f}`)
+      .sort();
+  } catch {
+    return [];
+  }
 }
 
 export async function getFlowerOwners(flowerTypeId: string) {
