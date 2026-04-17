@@ -37,7 +37,8 @@ export function FlowerOwnersModal({ flower, onClose }: Props) {
       const data = await getFlowerOwners(flower.id);
       setOwners(data);
     });
-  }, [flower]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flower?.id]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -99,6 +100,7 @@ export function FlowerOwnersModal({ flower, onClose }: Props) {
               </div>
               <button
                 onClick={onClose}
+                aria-label="Đóng"
                 className="text-[var(--zps-text-secondary)] hover:text-white text-xl leading-none p-1"
               >
                 ✕
