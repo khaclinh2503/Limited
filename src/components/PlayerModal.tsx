@@ -2,8 +2,9 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { qualityColor, qualityLabel } from "@/lib/sort";
+import { PlayerFlowersModal } from "@/components/PlayerFlowersModal";
 import type { Quality } from "@prisma/client";
 
 interface TopFlower {
@@ -32,6 +33,8 @@ interface PlayerModalProps {
 const RANK_LABELS: Record<number, string> = { 1: "🥇", 2: "🥈", 3: "🥉" };
 
 export function PlayerModal({ player, onClose }: PlayerModalProps) {
+  const [showAllFlowers, setShowAllFlowers] = useState(false);
+
   // Đóng khi nhấn Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -41,9 +44,15 @@ export function PlayerModal({ player, onClose }: PlayerModalProps) {
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
 
+  // Reset khi player thay đổi
+  useEffect(() => {
+    setShowAllFlowers(false);
+  }, [player?.id]);
+
   const displayName = player?.ingameName ?? player?.name ?? "Ẩn danh";
 
   return (
+    <>
     <AnimatePresence>
       {player && (
         <motion.div
@@ -175,10 +184,33 @@ export function PlayerModal({ player, onClose }: PlayerModalProps) {
                 <p className="text-sm">Chưa có hoa nào trong bộ sưu tập</p>
               </div>
             )}
+
+            {/* Xem tất cả hoa */}
+            {player.totalFlowers > 0 && (
+              <button
+                onClick={() => setShowAllFlowers(true)}
+                className="w-full mt-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 hover:opacity-90"
+                style={{
+                  background: "var(--zps-bg-elevated)",
+                  color: "var(--zps-text-secondary)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                }}
+              >
+                🌸 Xem tất cả {player.totalFlowers} hoa →
+              </button>
+            )}
           </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
+
+    <PlayerFlowersModal
+      playerId={showAllFlowers ? player?.id ?? null : null}
+      playerName={displayName}
+      totalFlowers={player?.totalFlowers ?? 0}
+      onClose={() => setShowAllFlowers(false)}
+    />
+    </>
   );
 }
 
