@@ -54,7 +54,7 @@ export function PlayerModal({ player, onClose }: PlayerModalProps) {
   return (
     <>
     <AnimatePresence>
-      {player && (
+      {player && !showAllFlowers && (
         <motion.div
           key="backdrop"
           initial={{ opacity: 0 }}
