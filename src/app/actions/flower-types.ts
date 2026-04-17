@@ -75,7 +75,6 @@ export async function getFlowerOwners(flowerTypeId: string) {
           name: true,
           ingameName: true,
           image: true,
-          email: true,
         },
       },
     },
