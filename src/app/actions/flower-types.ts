@@ -64,3 +64,22 @@ export async function deleteFlowerType(id: string) {
   revalidatePath("/stats");
   revalidatePath("/");
 }
+
+export async function getFlowerOwners(flowerTypeId: string) {
+  const ownerships = await prisma.flowerOwnership.findMany({
+    where: { flowerTypeId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          ingameName: true,
+          image: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: { user: { ingameName: "asc" } },
+  });
+  return ownerships.map((o) => o.user);
+}
