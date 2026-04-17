@@ -178,7 +178,7 @@ export function FlowerGrid({ flowers, ownedFlowerIds }: Props) {
                 >
                   {/* Ảnh hoa */}
                   <div
-                    className="w-full aspect-square rounded-lg overflow-hidden flex items-center justify-center mb-1 shrink-0"
+                    className="w-full aspect-square rounded-lg overflow-hidden flex items-center justify-center mb-1"
                     style={{
                       background: "var(--zps-bg-page)",
                       border: `1.5px solid ${isSelected ? color : "rgba(255,255,255,0.06)"}`,
@@ -196,7 +196,7 @@ export function FlowerGrid({ flowers, ownedFlowerIds }: Props) {
                     )}
                   </div>
 
-                  {/* Tên hoa — chiều cao cố định để các cell thẳng hàng */}
+                  {/* Tên hoa — line-clamp-2 giới hạn 2 dòng */}
                   <p
                     className="text-[10px] leading-tight line-clamp-2 break-words font-medium w-full text-center overflow-hidden"
                     style={{ color: isSelected ? color : "var(--zps-text-secondary)" }}
