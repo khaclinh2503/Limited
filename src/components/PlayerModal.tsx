@@ -62,7 +62,7 @@ export function PlayerModal({ player, onClose }: PlayerModalProps) {
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, y: 24, opacity: 0 }}
             transition={{ type: "spring", damping: 22, stiffness: 320 }}
-            className="card-gradient w-[95vw] sm:w-full sm:max-w-lg max-h-[88vh] overflow-y-auto"
+            className="card-gradient p-4 sm:p-6 w-[95vw] sm:w-full sm:max-w-lg max-h-[88vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

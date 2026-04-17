@@ -85,7 +85,7 @@ export function StatsClient({ user, flowers, ownedFlowerIds }: Props) {
       {/* 2-column layout */}
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* ── Cột trái: Profile ── */}
-        <div className={`card-gradient flex flex-col gap-4 overflow-y-auto ${activeTab === "profile" ? "block" : "hidden"} lg:block`}>
+        <div className={`card-gradient flex flex-col gap-4 overflow-y-auto ${activeTab === "profile" ? "flex" : "hidden"} lg:flex`}>
           {/* Avatar */}
           <div className="flex flex-col items-center gap-3 pb-4 border-b border-white/10">
             {user?.image ? (
@@ -179,7 +179,7 @@ export function StatsClient({ user, flowers, ownedFlowerIds }: Props) {
         </div>
 
         {/* ── Cột phải: Flower grid ── */}
-        <div className={`lg:col-span-2 card-gradient flex flex-col ${activeTab === "flowers" ? "block" : "hidden"} lg:block`}>
+        <div className={`lg:col-span-2 card-gradient flex flex-col ${activeTab === "flowers" ? "flex" : "hidden"} lg:flex`}>
           <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
             <div>
               <h2 className="font-bold text-lg">Hoa đang sở hữu</h2>
