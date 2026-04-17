@@ -62,7 +62,7 @@ export function PlayerModal({ player, onClose }: PlayerModalProps) {
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, y: 24, opacity: 0 }}
             transition={{ type: "spring", damping: 22, stiffness: 320 }}
-            className="card-gradient w-full max-w-lg max-h-[88vh] overflow-y-auto"
+            className="card-gradient w-[95vw] sm:w-full sm:max-w-lg max-h-[88vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -138,7 +138,7 @@ export function PlayerModal({ player, onClose }: PlayerModalProps) {
                         title={`${flower.name} — ${qualityLabel[flower.quality]}`}
                       >
                         <div
-                          className="w-[68px] h-[68px] rounded-xl overflow-hidden flex items-center justify-center"
+                          className="w-10 h-10 sm:w-[60px] sm:h-[60px] rounded-xl overflow-hidden flex items-center justify-center"
                           style={{
                             background: "var(--zps-bg-elevated)",
                             border: `2px solid ${color}`,
