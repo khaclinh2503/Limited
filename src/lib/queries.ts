@@ -11,6 +11,7 @@ export async function getLeaderboard(limit = 10) {
       image: true,
       ingameName: true,
       bio: true,
+      frame: true,
       createdAt: true,
       _count: { select: { ownerships: true } },
     },
@@ -28,6 +29,7 @@ export async function getLeaderboard(limit = 10) {
     image: u.image,
     ingameName: u.ingameName,
     bio: u.bio,
+    frame: u.frame,
     totalFlowers: u._count.ownerships,
     rank: i + 1,
   }));
@@ -47,6 +49,7 @@ export async function getPlayerDetail(userId: string) {
       image: true,
       bio: true,
       gameId: true,
+      frame: true,
       ownerships: {
         select: {
           flowerType: {
@@ -71,6 +74,7 @@ export async function getPlayerDetail(userId: string) {
     image: user.image,
     bio: user.bio,
     gameId: user.gameId,
+    frame: user.frame,
     totalFlowers: user.ownerships.length,
     topFlowers,
   };
