@@ -61,6 +61,7 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
   }
 
   function saveFrame(frame: string | null) {
+    const previousFrame = currentFrame;
     setCurrentFrame(frame);
     startTransition(async () => {
       try {
@@ -68,7 +69,7 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
         showToast("Đã cập nhật khung! ✨", true);
       } catch {
         showToast("Lưu thất bại, thử lại nhé!", false);
-        setCurrentFrame(user?.frame ?? null);
+        setCurrentFrame(previousFrame);
       }
     });
   }
