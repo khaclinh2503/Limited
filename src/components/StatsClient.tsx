@@ -228,7 +228,7 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
           onClick={() => setShowFramePicker(false)}
         >
           <div
-            className="rounded-2xl w-full max-w-sm flex flex-col gap-5"
+            className="rounded-2xl w-full max-w-md flex flex-col gap-5"
             style={{
               background: "linear-gradient(160deg, #1a1035 0%, #0f0a1e 100%)",
               border: "1px solid rgba(255,255,255,0.1)",
@@ -257,10 +257,10 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
               />
             </div>
 
-            {/* Grid khung — 5 cột, scroll dọc */}
+            {/* Grid khung — 4 cột, scroll dọc */}
             <div
               className="overflow-y-auto"
-              style={{ maxHeight: 320, padding: "12px 8px", margin: "0 -8px" }}
+              style={{ maxHeight: 380, padding: "4px 16px 16px" }}
             >
               <FramePicker
                 availableFrames={availableFrames}
