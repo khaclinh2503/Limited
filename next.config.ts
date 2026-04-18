@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
     "@libsql/client",
     "libsql",
   ],
+  outputFileTracingIncludes: {
+    "/admin": ["./public/flowers/**/*"],
+  },
 };
 
 export default nextConfig;
