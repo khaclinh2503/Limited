@@ -8,7 +8,7 @@ interface PlayerAvatarProps {
 }
 
 export function PlayerAvatar({ image, name, frame, size }: PlayerAvatarProps) {
-  const frameSize = Math.round(size * 1.4);
+  const frameSize = Math.round(size * 1.6);
   const frameOffset = -Math.round(size * 0.2);
   const borderRadius = size >= 64 ? 16 : 12;
 
