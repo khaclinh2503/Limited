@@ -25,6 +25,7 @@ interface PlayerDetail {
   image: string | null;
   bio: string | null;
   gameId: string | null;
+  frame: string | null;
   totalFlowers: number;
   topFlowers: { id: string; name: string; quality: Quality; imageUrl: string | null }[];
 }

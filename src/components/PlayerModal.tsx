@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { qualityColor, qualityLabel } from "@/lib/sort";
 import { PlayerFlowersModal } from "@/components/PlayerFlowersModal";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 import type { Quality } from "@prisma/client";
 
 interface TopFlower {
@@ -21,6 +22,7 @@ interface PlayerDetail {
   image: string | null;
   bio: string | null;
   gameId: string | null;
+  frame: string | null;
   totalFlowers: number;
   topFlowers: TopFlower[];
 }
@@ -78,22 +80,12 @@ export function PlayerModal({ player, onClose }: PlayerModalProps) {
             <div className="flex items-start justify-between mb-6">
               <div className="flex items-center gap-4">
                 {/* Avatar */}
-                {player.image ? (
-                  <Image
-                    src={player.image}
-                    alt={displayName}
-                    width={72}
-                    height={72}
-                    className="rounded-full ring-4 ring-[var(--zps-brand-orange)]"
-                  />
-                ) : (
-                  <div
-                    className="w-[72px] h-[72px] rounded-full flex items-center justify-center text-2xl font-bold ring-4 ring-[var(--zps-brand-orange)]"
-                    style={{ background: "var(--zps-bg-elevated)" }}
-                  >
-                    {displayName[0].toUpperCase()}
-                  </div>
-                )}
+                <PlayerAvatar
+                  image={player.image}
+                  name={displayName}
+                  frame={player.frame}
+                  size={72}
+                />
 
                 {/* Info */}
                 <div>
