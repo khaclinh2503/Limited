@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Image from "next/image";
 import { updateMyProfile } from "@/app/actions/profile";
 import { FlowerGrid } from "@/components/FlowerGrid";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { FramePicker } from "@/components/FramePicker";
 import type { Quality } from "@prisma/client";
 
 interface UserProfile {
@@ -14,6 +15,7 @@ interface UserProfile {
   bio: string | null;
   gameId: string | null;
   zalo: string | null;
+  frame: string | null;
 }
 
 interface Flower {
@@ -27,9 +29,10 @@ interface Props {
   user: UserProfile | null;
   flowers: Flower[];
   ownedFlowerIds: string[];
+  availableFrames: string[];
 }
 
-export function StatsClient({ user, flowers, ownedFlowerIds }: Props) {
+export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: Props) {
   const [form, setForm] = useState({
     ingameName: user?.ingameName ?? "",
     bio: user?.bio ?? "",
@@ -39,6 +42,7 @@ export function StatsClient({ user, flowers, ownedFlowerIds }: Props) {
   const [isPending, startTransition] = useTransition();
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
   const [activeTab, setActiveTab] = useState<"flowers" | "profile">("flowers");
+  const [currentFrame, setCurrentFrame] = useState<string | null>(user?.frame ?? null);
 
   function showToast(msg: string, ok: boolean) {
     setToast({ msg, ok });
@@ -52,6 +56,19 @@ export function StatsClient({ user, flowers, ownedFlowerIds }: Props) {
         showToast("Đã lưu thông tin cá nhân! ✨", true);
       } catch {
         showToast("Lưu thất bại, thử lại nhé!", false);
+      }
+    });
+  }
+
+  function saveFrame(frame: string | null) {
+    setCurrentFrame(frame);
+    startTransition(async () => {
+      try {
+        await updateMyProfile({ frame });
+        showToast("Đã cập nhật khung! ✨", true);
+      } catch {
+        showToast("Lưu thất bại, thử lại nhé!", false);
+        setCurrentFrame(user?.frame ?? null);
       }
     });
   }
@@ -88,24 +105,28 @@ export function StatsClient({ user, flowers, ownedFlowerIds }: Props) {
         <div className={`card-gradient flex flex-col gap-4 overflow-y-auto ${activeTab === "profile" ? "flex" : "hidden"} lg:flex`}>
           {/* Avatar */}
           <div className="flex flex-col items-center gap-3 pb-4 border-b border-white/10">
-            {user?.image ? (
-              <Image
-                src={user.image}
-                alt={displayName}
-                width={80}
-                height={80}
-                className="rounded-full ring-4 ring-[var(--zps-brand-orange)]/60"
-              />
-            ) : (
-              <div className="w-20 h-20 rounded-full bg-[var(--zps-bg-elevated)] flex items-center justify-center text-3xl font-bold ring-4 ring-[var(--zps-brand-orange)]/60">
-                {displayName[0].toUpperCase()}
-              </div>
-            )}
+            <PlayerAvatar
+              image={user?.image ?? null}
+              name={displayName}
+              frame={currentFrame}
+              size={80}
+            />
             <div className="text-center">
               <p className="font-semibold">{displayName}</p>
               <p className="text-xs text-[var(--zps-text-secondary)]">{user?.email}</p>
             </div>
           </div>
+
+          {availableFrames.length > 0 && (
+            <FramePicker
+              availableFrames={availableFrames}
+              currentFrame={currentFrame}
+              userImage={user?.image ?? null}
+              userName={displayName}
+              onSelect={saveFrame}
+              disabled={isPending}
+            />
+          )}
 
           {/* Form fields */}
           <div className="space-y-4">
