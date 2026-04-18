@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import type { Quality } from "@prisma/client";
 import { getPlayerDetailAction } from "@/app/actions/player";
 import { PlayerModal } from "@/components/PlayerModal";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
@@ -28,7 +29,7 @@ interface PlayerDetail {
   topFlowers: {
     id: string;
     name: string;
-    quality: import("@prisma/client").Quality;
+    quality: Quality;
     imageUrl: string | null;
   }[];
 }
