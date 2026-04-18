@@ -223,11 +223,17 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
       {/* Frame picker modal */}
       {showFramePicker && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.85)" }}
           onClick={() => setShowFramePicker(false)}
         >
           <div
-            className="bg-[var(--zps-bg-card)] rounded-2xl p-6 w-full max-w-sm flex flex-col gap-5"
+            className="rounded-2xl w-full max-w-sm flex flex-col gap-5"
+            style={{
+              background: "linear-gradient(160deg, #1a1035 0%, #0f0a1e 100%)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              padding: "24px",
+            }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -235,14 +241,14 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
               <h3 className="font-bold text-lg">Chọn khung avatar</h3>
               <button
                 onClick={() => setShowFramePicker(false)}
-                className="text-[var(--zps-text-secondary)] hover:text-white transition-colors text-xl leading-none"
+                className="text-[var(--zps-text-secondary)] hover:text-white transition-colors text-xl leading-none w-8 h-8 flex items-center justify-center"
               >
                 ✕
               </button>
             </div>
 
             {/* Preview lớn */}
-            <div className="flex justify-center py-2">
+            <div className="flex justify-center" style={{ padding: "8px 0 4px" }}>
               <PlayerAvatar
                 image={user?.image ?? null}
                 name={displayName}
@@ -251,15 +257,20 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
               />
             </div>
 
-            {/* Grid khung */}
-            <FramePicker
-              availableFrames={availableFrames}
-              currentFrame={currentFrame}
-              userImage={user?.image ?? null}
-              userName={displayName}
-              onSelect={saveFrame}
-              disabled={isPending}
-            />
+            {/* Grid khung — 5 cột, scroll dọc */}
+            <div
+              className="overflow-y-auto"
+              style={{ maxHeight: 320, padding: "12px 8px", margin: "0 -8px" }}
+            >
+              <FramePicker
+                availableFrames={availableFrames}
+                currentFrame={currentFrame}
+                userImage={user?.image ?? null}
+                userName={displayName}
+                onSelect={saveFrame}
+                disabled={isPending}
+              />
+            </div>
           </div>
         </div>
       )}

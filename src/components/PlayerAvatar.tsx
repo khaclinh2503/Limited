@@ -43,7 +43,7 @@ export function PlayerAvatar({ image, name, frame, size }: PlayerAvatarProps) {
         )}
       </div>
 
-      {/* Frame overlay — tràn ra ngoài */}
+      {/* Frame overlay — tràn ra ngoài, căn giữa avatar */}
       {frame && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -54,8 +54,9 @@ export function PlayerAvatar({ image, name, frame, size }: PlayerAvatarProps) {
           style={{
             width: frameSize,
             height: frameSize,
-            top: frameOffset,
-            left: frameOffset,
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             objectFit: "contain",
             zIndex: 10,
           }}

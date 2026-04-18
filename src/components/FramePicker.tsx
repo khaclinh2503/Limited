@@ -20,7 +20,7 @@ export function FramePicker({
   disabled,
 }: FramePickerProps) {
   return (
-    <div className="grid grid-cols-5 gap-4">
+    <div className="grid grid-cols-5 gap-4" style={{ justifyItems: "center" }}>
       {/* Ô không khung */}
       <button
         type="button"
