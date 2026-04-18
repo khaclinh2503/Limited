@@ -43,6 +43,7 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
   const [activeTab, setActiveTab] = useState<"flowers" | "profile">("flowers");
   const [currentFrame, setCurrentFrame] = useState<string | null>(user?.frame ?? null);
+  const [showFramePicker, setShowFramePicker] = useState(false);
 
   function showToast(msg: string, ok: boolean) {
     setToast({ msg, ok });
@@ -63,6 +64,7 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
   function saveFrame(frame: string | null) {
     const previousFrame = currentFrame;
     setCurrentFrame(frame);
+    setShowFramePicker(false);
     startTransition(async () => {
       try {
         await updateMyProfile({ frame });
@@ -104,30 +106,33 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* ── Cột trái: Profile ── */}
         <div className={`card-gradient flex flex-col gap-4 overflow-y-auto ${activeTab === "profile" ? "flex" : "hidden"} lg:flex`}>
-          {/* Avatar */}
+          {/* Avatar — click để chọn khung */}
           <div className="flex flex-col items-center gap-3 pb-4 border-b border-white/10">
-            <PlayerAvatar
-              image={user?.image ?? null}
-              name={displayName}
-              frame={currentFrame}
-              size={80}
-            />
+            <button
+              type="button"
+              onClick={() => availableFrames.length > 0 && setShowFramePicker(true)}
+              className="relative group"
+              title="Nhấn để chọn khung avatar"
+            >
+              <PlayerAvatar
+                image={user?.image ?? null}
+                name={displayName}
+                frame={currentFrame}
+                size={80}
+              />
+              {availableFrames.length > 0 && (
+                <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 group-hover:bg-black/40 transition-all duration-150">
+                  <span className="opacity-0 group-hover:opacity-100 text-white text-xs font-semibold transition-all duration-150 drop-shadow">
+                    🖼️ Đổi khung
+                  </span>
+                </div>
+              )}
+            </button>
             <div className="text-center">
               <p className="font-semibold">{displayName}</p>
               <p className="text-xs text-[var(--zps-text-secondary)]">{user?.email}</p>
             </div>
           </div>
-
-          {availableFrames.length > 0 && (
-            <FramePicker
-              availableFrames={availableFrames}
-              currentFrame={currentFrame}
-              userImage={user?.image ?? null}
-              userName={displayName}
-              onSelect={saveFrame}
-              disabled={isPending}
-            />
-          )}
 
           {/* Form fields */}
           <div className="space-y-4">
@@ -214,6 +219,50 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
           <FlowerGrid flowers={flowers} ownedFlowerIds={ownedFlowerIds} />
         </div>
       </div>
+
+      {/* Frame picker modal */}
+      {showFramePicker && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setShowFramePicker(false)}
+        >
+          <div
+            className="bg-[var(--zps-bg-card)] rounded-2xl p-6 w-full max-w-sm flex flex-col gap-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-lg">Chọn khung avatar</h3>
+              <button
+                onClick={() => setShowFramePicker(false)}
+                className="text-[var(--zps-text-secondary)] hover:text-white transition-colors text-xl leading-none"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Preview lớn */}
+            <div className="flex justify-center py-2">
+              <PlayerAvatar
+                image={user?.image ?? null}
+                name={displayName}
+                frame={currentFrame}
+                size={96}
+              />
+            </div>
+
+            {/* Grid khung */}
+            <FramePicker
+              availableFrames={availableFrames}
+              currentFrame={currentFrame}
+              userImage={user?.image ?? null}
+              userName={displayName}
+              onSelect={saveFrame}
+              disabled={isPending}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Toast */}
       {toast && (
