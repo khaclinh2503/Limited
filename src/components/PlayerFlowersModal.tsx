@@ -85,7 +85,7 @@ export function PlayerFlowersModal({ playerId, playerName, totalFlowers, onClose
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.95, y: 20, opacity: 0 }}
             transition={{ type: "spring", damping: 24, stiffness: 340 }}
-            className="card-gradient flex flex-col w-[95vw] sm:w-full sm:max-w-2xl max-h-[90vh]"
+            className="card-gradient flex flex-col w-[95vw] sm:w-full sm:max-w-2xl h-[85vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

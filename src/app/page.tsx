@@ -19,7 +19,7 @@ function getCurrentSeason() {
 
 async function DashboardContent() {
   const [leaderboard, totalMembers] = await Promise.all([
-    getLeaderboard(10),
+    getLeaderboard(),
     getTotalMembers(),
   ]);
 
