@@ -5,6 +5,7 @@ import { AuroraBg } from "@/components/AuroraBg";
 import { PetalLayer } from "@/components/PetalLayer";
 import { Navigation } from "@/components/Navigation";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 const beVietnamPro = Be_Vietnam_Pro({
   subsets: ["vietnamese", "latin"],
@@ -24,6 +25,15 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+  const navUser = session?.user
+    ? await (async () => {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: { frame: true },
+        });
+        return { ...session.user, frame: dbUser?.frame ?? null };
+      })()
+    : null;
 
   return (
     <html lang="vi" className={beVietnamPro.variable} suppressHydrationWarning>
@@ -40,7 +50,7 @@ export default async function RootLayout({
         <PetalLayer />
 
         <div className="relative z-10 flex flex-col h-screen overflow-hidden">
-          <Navigation user={session?.user ?? null} />
+          <Navigation user={navUser} />
           <main className="flex-1 min-h-0 w-full max-w-5xl mx-auto px-4 py-4 flex flex-col">
             {children}
           </main>

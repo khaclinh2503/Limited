@@ -5,11 +5,23 @@ interface PlayerAvatarProps {
   name: string;
   frame: string | null;
   size: number;
+  frameScale?: number;
+  frameAnchorX?: number;
+  frameAnchorY?: number;
 }
 
-export function PlayerAvatar({ image, name, frame, size }: PlayerAvatarProps) {
-  const frameSize = Math.round(size * 1.6);
-  const frameOffset = -Math.round((frameSize - size) / 2);
+export function PlayerAvatar({
+  image,
+  name,
+  frame,
+  size,
+  frameScale = 1.4,
+  frameAnchorX = 0.5,
+  frameAnchorY = 0.5,
+}: PlayerAvatarProps) {
+  const frameSize = Math.round(size * frameScale);
+  const frameLeft = Math.round(size / 2 - frameAnchorX * frameSize);
+  const frameTop = Math.round(size / 2 - frameAnchorY * frameSize);
   const borderRadius = size >= 64 ? 16 : 12;
 
   return (
@@ -19,15 +31,13 @@ export function PlayerAvatar({ image, name, frame, size }: PlayerAvatarProps) {
         width: size,
         height: size,
         flexShrink: 0,
-        overflow: "visible",
-        display: "inline-block",
       }}
     >
-      {/* Avatar — clipped to rounded square */}
+      {/* Avatar — fills container, clipped by border-radius */}
       <div
         style={{
-          position: "absolute",
-          inset: 0,
+          width: "100%",
+          height: "100%",
           borderRadius,
           overflow: "hidden",
         }}
@@ -65,21 +75,20 @@ export function PlayerAvatar({ image, name, frame, size }: PlayerAvatarProps) {
         )}
       </div>
 
-      {/* Frame overlay — tràn ra ngoài avatar */}
+      {/* Frame overlay — DIV với background-image, tránh Tailwind preflight cap <img> width */}
       {frame && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={frame}
-          alt=""
+        <div
           aria-hidden
           style={{
             position: "absolute",
             width: frameSize,
             height: frameSize,
-            top: frameOffset,
-            left: frameOffset,
-            objectFit: "contain",
-            zIndex: 10,
+            top: frameTop,
+            left: frameLeft,
+            backgroundImage: `url(${frame})`,
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
             pointerEvents: "none",
           }}
         />

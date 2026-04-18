@@ -228,16 +228,19 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
           onClick={() => setShowFramePicker(false)}
         >
           <div
-            className="rounded-2xl w-full max-w-md flex flex-col gap-5"
+            className="rounded-2xl w-full max-w-md flex flex-col"
             style={{
               background: "linear-gradient(160deg, #1a1035 0%, #0f0a1e 100%)",
               border: "1px solid rgba(255,255,255,0.1)",
-              padding: "24px",
+              maxHeight: "90vh",
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between">
+            {/* Header — fixed */}
+            <div
+              className="flex items-center justify-between shrink-0"
+              style={{ padding: "20px 24px 12px" }}
+            >
               <h3 className="font-bold text-lg">Chọn khung avatar</h3>
               <button
                 onClick={() => setShowFramePicker(false)}
@@ -247,8 +250,11 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
               </button>
             </div>
 
-            {/* Preview lớn */}
-            <div className="flex justify-center" style={{ padding: "8px 0 4px" }}>
+            {/* Preview lớn — fixed */}
+            <div
+              className="flex justify-center shrink-0"
+              style={{ padding: "16px 0 12px" }}
+            >
               <PlayerAvatar
                 image={user?.image ?? null}
                 name={displayName}
@@ -257,10 +263,14 @@ export function StatsClient({ user, flowers, ownedFlowerIds, availableFrames }: 
               />
             </div>
 
-            {/* Grid khung — 4 cột, scroll dọc */}
+            {/* Grid khung — scroll dọc, padding rộng để frame không bị clip */}
             <div
-              className="overflow-y-auto"
-              style={{ maxHeight: 380, padding: "4px 16px 16px" }}
+              style={{
+                overflowY: "auto",
+                overflowX: "hidden",
+                flex: "1 1 auto",
+                minHeight: 0,
+              }}
             >
               <FramePicker
                 availableFrames={availableFrames}

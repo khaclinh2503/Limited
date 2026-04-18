@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import type { Role } from "@prisma/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 
 interface NavProps {
   user?: {
@@ -13,6 +13,7 @@ interface NavProps {
     name?: string | null;
     email: string;
     image?: string | null;
+    frame?: string | null;
     role: Role;
   } | null;
 }
@@ -84,22 +85,15 @@ export function Navigation({ user }: NavProps) {
             <>
               <button
                 onClick={() => setDropdownOpen((v) => !v)}
-                className="flex items-center gap-2 p-1 rounded-full hover:bg-[var(--zps-overlay)] transition-colors"
+                className="flex items-center gap-2 p-1 rounded-lg hover:bg-[var(--zps-overlay)] transition-colors"
                 aria-label="Tài khoản"
               >
-                {user.image ? (
-                  <Image
-                    src={user.image}
-                    alt={user.name ?? "avatar"}
-                    width={36}
-                    height={36}
-                    className="rounded-full ring-2 ring-[var(--zps-brand-orange)]/60"
-                  />
-                ) : (
-                  <div className="w-9 h-9 rounded-full bg-[var(--zps-bg-elevated)] flex items-center justify-center text-sm font-bold">
-                    {(user.name ?? user.email)[0].toUpperCase()}
-                  </div>
-                )}
+                <PlayerAvatar
+                  image={user.image ?? null}
+                  name={user.name ?? user.email}
+                  frame={user.frame ?? null}
+                  size={36}
+                />
               </button>
 
               {dropdownOpen && (
