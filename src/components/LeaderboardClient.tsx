@@ -1,15 +1,16 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Image from "next/image";
 import { getPlayerDetailAction } from "@/app/actions/player";
 import { PlayerModal } from "@/components/PlayerModal";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 
 interface LeaderboardEntry {
   id: string;
   email: string;
   name: string | null;
   image: string | null;
+  frame: string | null;
   ingameName: string | null;
   totalFlowers: number;
   rank: number;
@@ -20,6 +21,7 @@ interface PlayerDetail {
   name: string | null;
   ingameName: string | null;
   image: string | null;
+  frame: string | null;
   bio: string | null;
   gameId: string | null;
   totalFlowers: number;
@@ -59,7 +61,7 @@ export function LeaderboardClient({ data, top1 }: Props) {
 
   return (
     <>
-      {/* Rank #1 stat card (clickable) */}
+      {/* Rank #1 stat card */}
       {top1 && (
         <div
           className="card-gradient cursor-pointer rank-1-glow"
@@ -69,19 +71,12 @@ export function LeaderboardClient({ data, top1 }: Props) {
             🏆 Hạng #1
           </p>
           <div className="flex items-center gap-3">
-            {top1.image ? (
-              <Image
-                src={top1.image}
-                alt={displayName(top1)}
-                width={52}
-                height={52}
-                className="rounded-full ring-2 ring-[var(--zps-brand-orange)]"
-              />
-            ) : (
-              <div className="w-[52px] h-[52px] rounded-full bg-[var(--zps-bg-elevated)] flex items-center justify-center font-bold text-lg">
-                {displayName(top1)[0].toUpperCase()}
-              </div>
-            )}
+            <PlayerAvatar
+              image={top1.image}
+              name={displayName(top1)}
+              frame={top1.frame}
+              size={52}
+            />
             <div className="min-w-0">
               <p className="font-bold truncate">{displayName(top1)}</p>
               <p className="text-sm text-[var(--zps-brand-orange)] font-semibold">
@@ -124,19 +119,12 @@ export function LeaderboardClient({ data, top1 }: Props) {
                 </div>
 
                 {/* Avatar */}
-                {entry.image ? (
-                  <Image
-                    src={entry.image}
-                    alt={displayName(entry)}
-                    width={40}
-                    height={40}
-                    className="rounded-full shrink-0 ring-2"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-[var(--zps-bg-elevated)] flex items-center justify-center text-sm font-bold shrink-0">
-                    {displayName(entry)[0].toUpperCase()}
-                  </div>
-                )}
+                <PlayerAvatar
+                  image={entry.image}
+                  name={displayName(entry)}
+                  frame={entry.frame}
+                  size={44}
+                />
 
                 {/* Name */}
                 <div className="flex-1 min-w-0">
