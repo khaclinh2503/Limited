@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { qualityColor, qualityLabel } from "@/lib/sort";
+import { qualityColor, qualityLabel, qualityBgGradient } from "@/lib/sort";
 import { PlayerFlowersModal } from "@/components/PlayerFlowersModal";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import type { Quality } from "@prisma/client";
@@ -141,7 +141,7 @@ export function PlayerModal({ player, onClose }: PlayerModalProps) {
                         <div
                           className="w-10 h-10 sm:w-[60px] sm:h-[60px] rounded-xl overflow-hidden flex items-center justify-center"
                           style={{
-                            background: "var(--zps-bg-elevated)",
+                            background: qualityBgGradient(flower.quality),
                             border: `2px solid ${color}`,
                             boxShadow: `0 0 12px ${color}55`,
                           }}

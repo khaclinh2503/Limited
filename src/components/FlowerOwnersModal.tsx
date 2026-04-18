@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { getFlowerOwners } from "@/app/actions/flower-types";
-import { qualityColor, qualityLabel } from "@/lib/sort";
+import { qualityColor, qualityLabel, qualityBgGradient } from "@/lib/sort";
 import type { Quality } from "@prisma/client";
 
 interface FlowerInfo {
@@ -81,7 +81,10 @@ export function FlowerOwnersModal({ flower, onClose }: Props) {
                     src={flower.imageUrl}
                     alt={flower.name}
                     className="w-10 h-10 rounded-lg object-cover"
-                    style={{ border: `2px solid ${color}` }}
+                    style={{
+                      border: `2px solid ${color}`,
+                      background: qualityBgGradient(flower.quality),
+                    }}
                   />
                 ) : (
                   <div

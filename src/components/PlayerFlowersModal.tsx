@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getPlayerFlowers } from "@/app/actions/players";
-import { qualityColor, qualityLabel } from "@/lib/sort";
+import { qualityColor, qualityLabel, qualityBgGradient } from "@/lib/sort";
 import type { Quality } from "@prisma/client";
 
 interface Flower {
@@ -169,7 +169,7 @@ export function PlayerFlowersModal({ playerId, playerName, totalFlowers, onClose
                         <div
                           className="w-full aspect-square rounded-lg overflow-hidden flex items-center justify-center mb-1"
                           style={{
-                            background: "var(--zps-bg-page)",
+                            background: qualityBgGradient(flower.quality),
                             border: `1.5px solid ${color}`,
                             boxShadow: `0 0 8px ${color}33`,
                           }}

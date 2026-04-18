@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useMemo } from "react";
 import { updateMyOwnerships } from "@/app/actions/ownerships";
-import { qualityColor, qualityLabel } from "@/lib/sort";
+import { qualityColor, qualityLabel, qualityBgGradient } from "@/lib/sort";
 import type { Quality } from "@prisma/client";
 
 interface Flower {
@@ -158,7 +158,7 @@ export function FlowerGrid({ flowers, ownedFlowerIds }: Props) {
             <p className="text-sm">Không tìm thấy hoa nào</p>
           </div>
         ) : (
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-2">
+          <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
             {filtered.map((flower) => {
               const isSelected = selected.has(flower.id);
               const color = qualityColor[flower.quality];
@@ -180,7 +180,7 @@ export function FlowerGrid({ flowers, ownedFlowerIds }: Props) {
                   <div
                     className="w-full aspect-square rounded-lg overflow-hidden flex items-center justify-center mb-1"
                     style={{
-                      background: "var(--zps-bg-page)",
+                      background: qualityBgGradient(flower.quality),
                       border: `1.5px solid ${isSelected ? color : "rgba(255,255,255,0.06)"}`,
                     }}
                   >
@@ -198,7 +198,7 @@ export function FlowerGrid({ flowers, ownedFlowerIds }: Props) {
 
                   {/* Tên hoa — line-clamp-2 giới hạn 2 dòng */}
                   <p
-                    className="text-[10px] leading-tight line-clamp-2 break-words font-medium w-full text-center overflow-hidden"
+                    className="text-xs leading-tight line-clamp-2 break-words font-medium w-full text-center overflow-hidden px-0.5"
                     style={{ color: isSelected ? color : "var(--zps-text-secondary)" }}
                   >
                     {flower.name}

@@ -30,6 +30,7 @@
   --zps-dropdown-shadow: rgba(0, 0, 0, 0.45);
   --zps-flower-card-bg-start: var(--zps-bg-elevated);
   --zps-flower-card-bg-end: rgba(46, 49, 72, 0.5);
+  --zps-flower-img-bg: radial-gradient(circle at 35% 25%, #FFF5E0 0%, #F2D5A6 70%, #E8C188 100%);
   --zps-text-accent: #F5A623;
 
   --quality-do: #E8341A;
@@ -64,6 +65,7 @@ html[data-theme="light"] {
   --zps-dropdown-shadow: rgba(120, 20, 70, 0.18);
   --zps-flower-card-bg-start: #FFF4FB;
   --zps-flower-card-bg-end: rgba(255, 195, 225, 0.55);
+  --zps-flower-img-bg: radial-gradient(circle at 35% 25%, #FFFFFF 0%, #FFE3F0 70%, #FFCFE2 100%);
   --zps-text-accent: #B05400;
 }
 

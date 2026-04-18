@@ -25,6 +25,11 @@ export const qualityColor: Record<Quality, string> = {
   XANH_LAM: "#4A90D9",
 };
 
+export function qualityBgGradient(quality: Quality): string {
+  const c = qualityColor[quality];
+  return `radial-gradient(circle at 35% 25%, #FFFFFF 0%, ${c}55 65%, ${c}AA 100%)`;
+}
+
 export function sortFlowersByQuality<T extends { quality: Quality }>(
   flowers: T[]
 ): T[] {

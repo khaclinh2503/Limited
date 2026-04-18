@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { qualityColor, qualityLabel } from "@/lib/sort";
+import { qualityColor, qualityLabel, qualityBgGradient } from "@/lib/sort";
 import {
   createFlowerType,
   updateFlowerType,
@@ -267,7 +267,7 @@ function FlowerCatalogTab({ flowers, isAdmin }: { flowers: Flower[]; isAdmin: bo
                 >
                   <div
                     className="w-10 h-10 rounded-lg overflow-hidden shrink-0 flex items-center justify-center"
-                    style={{ background: "var(--zps-bg-elevated)", border: `2px solid ${color}` }}
+                    style={{ background: qualityBgGradient(f.quality), border: `2px solid ${color}` }}
                   >
                     {f.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -315,7 +315,7 @@ function FlowerCatalogTab({ flowers, isAdmin }: { flowers: Flower[]; isAdmin: bo
                 >
                   <div
                     className="w-12 h-12 rounded-lg overflow-hidden shrink-0 flex items-center justify-center"
-                    style={{ background: "var(--zps-bg-elevated)", border: `2px solid ${color}` }}
+                    style={{ background: qualityBgGradient(f.quality), border: `2px solid ${color}` }}
                   >
                     {f.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
