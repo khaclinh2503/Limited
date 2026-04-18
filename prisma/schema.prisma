@@ -31,6 +31,7 @@ model User {
   bio            String?
   gameId         String?
   zalo           String?
+  frame          String?
   role           Role      @default(MEMBER)
   approved       Boolean   @default(false)
   createdAt      DateTime  @default(now())
