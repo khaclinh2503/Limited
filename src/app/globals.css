@@ -318,7 +318,7 @@ html[data-theme="light"] .card-gradient:hover {
   position: relative;
   background: linear-gradient(145deg, var(--zps-flower-card-bg-start), var(--zps-flower-card-bg-end));
   border-radius: 14px;
-  padding: 16px;
+  padding: 8px;
   transition: all 0.35s var(--ease-bounce);
   border: 2px solid transparent;
   cursor: pointer;

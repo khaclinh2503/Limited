@@ -198,7 +198,7 @@ export function FlowerGrid({ flowers, ownedFlowerIds }: Props) {
 
                   {/* Tên hoa — line-clamp-2 giới hạn 2 dòng */}
                   <p
-                    className="text-xs leading-tight line-clamp-2 break-words font-medium w-full text-center overflow-hidden px-0.5"
+                    className="text-sm leading-tight line-clamp-4 break-words font-medium w-full text-center px-0.5"
                     style={{ color: isSelected ? color : "var(--zps-text-secondary)" }}
                   >
                     {flower.name}
