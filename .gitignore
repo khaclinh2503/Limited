@@ -9,10 +9,19 @@ out/
 .env
 .env.local
 .env.*.local
+.env.prod
 
 # Database
 prisma/dev.db
 prisma/dev.db-journal
+prisma/prisma/
+
+# Claude Code / superpowers artifacts
+.superpowers/
+
+# Test artifacts
+test-results/
+playwright-report/
 
 # OS
 .DS_Store
