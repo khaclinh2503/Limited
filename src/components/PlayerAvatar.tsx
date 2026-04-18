@@ -9,18 +9,28 @@ interface PlayerAvatarProps {
 
 export function PlayerAvatar({ image, name, frame, size }: PlayerAvatarProps) {
   const frameSize = Math.round(size * 1.6);
-  const frameOffset = -Math.round(size * 0.2);
+  const frameOffset = -Math.round((frameSize - size) / 2);
   const borderRadius = size >= 64 ? 16 : 12;
 
   return (
     <div
-      className="relative shrink-0"
-      style={{ width: size, height: size }}
+      style={{
+        position: "relative",
+        width: size,
+        height: size,
+        flexShrink: 0,
+        overflow: "visible",
+        display: "inline-block",
+      }}
     >
-      {/* Avatar inner — clipped */}
+      {/* Avatar — clipped to rounded square */}
       <div
-        className="w-full h-full overflow-hidden"
-        style={{ borderRadius }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius,
+          overflow: "hidden",
+        }}
       >
         {image ? (
           <Image
@@ -28,12 +38,24 @@ export function PlayerAvatar({ image, name, frame, size }: PlayerAvatarProps) {
             alt={name}
             width={size}
             height={size}
-            className="w-full h-full object-cover object-top"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "top",
+              display: "block",
+            }}
           />
         ) : (
           <div
-            className="w-full h-full flex items-center justify-center font-bold text-white"
             style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: "bold",
+              color: "white",
               background: "linear-gradient(135deg, #4285F4, #EA4335)",
               fontSize: Math.round(size * 0.35),
             }}
@@ -43,22 +65,22 @@ export function PlayerAvatar({ image, name, frame, size }: PlayerAvatarProps) {
         )}
       </div>
 
-      {/* Frame overlay — tràn ra ngoài, căn giữa avatar */}
+      {/* Frame overlay — tràn ra ngoài avatar */}
       {frame && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={frame}
           alt=""
           aria-hidden
-          className="absolute pointer-events-none select-none"
           style={{
+            position: "absolute",
             width: frameSize,
             height: frameSize,
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
+            top: frameOffset,
+            left: frameOffset,
             objectFit: "contain",
             zIndex: 10,
+            pointerEvents: "none",
           }}
         />
       )}
